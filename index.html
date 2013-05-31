@@ -121,7 +121,7 @@
 			scene = new THREE.Scene();
 			scene.fog = new THREE.Fog( 0x000000, 0, 500 );
 
-			var ambient = new THREE.AmbientLight( 0x111111 );
+			var ambient = new THREE.AmbientLight( 0x222222 );
 			scene.add( ambient );
 
 			light = new THREE.SpotLight( 0xffffff );
@@ -134,11 +134,10 @@
 			light.shadowCameraFar = 50;//camera.far;
 			light.shadowCameraFov = 40;
 
-			light.shadowMapBias = 0.1;
-			light.shadowMapDarkness = 0.7;
+			light.shadowMapDarkness = 0.8;
 			light.shadowMapWidth = 2*512;
 			light.shadowMapHeight = 2*512;
-
+			light.shadowCameraVisible = true;
 			scene.add( light );
 			
 			controls = new PointerLockControls( camera , sphereBody );
@@ -149,14 +148,13 @@
 			geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 
 			material = new THREE.MeshLambertMaterial( { color: 0xdddddd } );
-			//THREE.ColorUtils.adjustHSV( material.color, 0, 0, 0.9 );
 
 			mesh = new THREE.Mesh( geometry, material );
 			mesh.castShadow = true;
 			mesh.receiveShadow = true;
 			scene.add( mesh );
 
-			renderer = new THREE.WebGLRenderer();
+			renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.shadowMapEnabled = true;
 			renderer.shadowMapSoft = true;
 			renderer.setSize( window.innerWidth, window.innerHeight );
@@ -176,7 +174,7 @@
 			boxBody.position.set(10,10,10);
 			boxMesh.position.set(10,10,10);
 			boxMesh.castShadow = true;
-			boxMesh.receiveShadow = true;
+			boxMesh.receiveShadow = false;
 			boxMesh.useQuaternion = true;
 			
 		}
