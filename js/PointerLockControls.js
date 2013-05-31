@@ -6,7 +6,7 @@
 
     var eyeYPos = 2; // eyes are 2 meters above the ground
     var velocityFactor = 0.2;
-    var jumpVelocity = 20;
+    var jumpVelocity = 40;
     var scope = this;
 
     var pitchObject = new THREE.Object3D();
@@ -45,7 +45,8 @@
     var velocity = cannonBody.velocity;
 
     var PI_2 = Math.PI / 2;
-
+	var projector = new THREE.Projector();
+	
     var onMouseMove = function ( event ) {
 
         if ( scope.enabled === false ) return;
@@ -57,6 +58,17 @@
         pitchObject.rotation.x -= movementY * 0.002;
 
         pitchObject.rotation.x = Math.max( - PI_2, Math.min( PI_2, pitchObject.rotation.x ) );
+		
+		var vector = new THREE.Vector3( 0, 0, -1 );
+		var pWorld = vector.applyMatrix4( camera.matrixWorld );
+		//console.log(pWorld);
+		var raycaster = new THREE.Raycaster( camera.position, pWorld.normalize() );
+		var intersects = raycaster.intersectObjects( objects );
+
+		if ( intersects.length > 0 ) {
+			console.log("Object clicked")
+		}
+
     };
 
     var onKeyDown = function ( event ) {

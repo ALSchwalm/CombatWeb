@@ -32,7 +32,7 @@
 	<script>
 		var sphereShape, sphereBody, world, physicsMaterial;
 
-		var camera, scene, renderer;
+		var camera, scene, renderer, objects = [];
 		var geometry, material, mesh;
 		var controls,time = Date.now();
 
@@ -57,7 +57,7 @@
 			document.addEventListener( 'pointerlockchange', pointerlockchange, false );
 			document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
 			document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
-		
+			window.addEventListener( 'resize', onWindowResize, false );
 			document.addEventListener( 'click', function(event) {
 				element.requestPointerLock = element.requestPointerLock || 
 										  element.mozRequestPointerLock || 
@@ -71,6 +71,16 @@
 		init();
 		animate();
 
+		
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+		
 		function initCannon(){
 			// Setup our world
 			world = new CANNON.World();
@@ -80,32 +90,32 @@
 			var solver = new CANNON.GSSolver();
 
 			world.defaultContactMaterial.contactEquationStiffness = 1e9;
-			world.defaultContactMaterial.contactEquationRegularizationTime = 4;
+			world.defaultContactMaterial.contactEquationRegularizationTime = 3;
 
 			solver.iterations = 7;
 			solver.tolerance = 0.1;
 
 			world.solver = new CANNON.SplitSolver(solver);
 
-			world.gravity.set(0,-20,0);
+			world.gravity.set(0,-40,0);
 			world.broadphase = new CANNON.NaiveBroadphase();
 
 			// Create a slippery material (friction coefficient = 0.0)
-			physicsMaterial = new CANNON.Material("slipperyMaterial");
+			physicsMaterial = new CANNON.Material("physicsMaterial");
 			var physicsContactMaterial = new CANNON.ContactMaterial(physicsMaterial,
 																	physicsMaterial,
-																	1.0, // friction coefficient
+																	0.4, // friction coefficient
 																	0.3  // restitution
 																	);
 			// We must add the contact materials to the world
 			world.addContactMaterial(physicsContactMaterial);
 
 			// Create a sphere
-			var mass = 5, radius = 1.3;
+			var mass = 50, radius = 1.3;
 			sphereShape = new CANNON.Sphere(radius);
 			sphereBody = new CANNON.RigidBody(mass,sphereShape,physicsMaterial);
 			sphereBody.position.set(0,radius,0);
-			sphereBody.linearDamping = 0.99;
+			//sphereBody.linearDamping = 0.9;
 			world.add(sphereBody);
 
 			// Create a plane
@@ -176,6 +186,7 @@
 			boxMesh.castShadow = true;
 			boxMesh.receiveShadow = false;
 			boxMesh.useQuaternion = true;
+			objects.push(boxMesh);
 			
 		}
 		
