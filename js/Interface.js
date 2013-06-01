@@ -29,14 +29,32 @@ Interface.setup = function() {
 									  element.mozRequestPointerLock || 
 									  element.webkitRequestPointerLock;
 			element.requestPointerLock();
+			
+			var onMouseDown = function( event ) {
+				var projector = new THREE.Projector();
+				var vector = new THREE.Vector3(0,0,1);
+				projector.unprojectVector(vector, Game.camera);
+				var raycaster = new THREE.Raycaster(Game.player.body.position, vector.sub(Game.player.body.position).normalize() );
+				var intersects = raycaster.intersectObjects( Object.getMeshes(Game.objects) );
+
+				if(intersects.length) {
+					var i = Object.getMeshes(Game.objects).indexOf(intersects[0].object);
+					Game.objects[i].body.applyForce(new CANNON.Vec3(raycaster.ray.direction.x*10000,
+																	raycaster.ray.direction.y*10000,
+																	raycaster.ray.direction.z*10000), 
+													Game.objects[i].body.position);
+				}
+			}
+			onMouseDown();
+			
 		});
 	}
 }
 
 Interface.onWindowResize = function() {
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
+	Game.camera.aspect = window.innerWidth / window.innerHeight;
+	Game.camera.updateProjectionMatrix();
 
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	Game.renderer.setSize( window.innerWidth, window.innerHeight );
 
 }

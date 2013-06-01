@@ -15,15 +15,41 @@
 				overflow: hidden;
 				font-family: arial;
 			}
+			
+			.outercircle {
+				position: absolute;
+				margin: auto;
+				top:0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				border-radius: 50%;
+				background:#FFF;
+				width: 4px;
+				height: 4px; 
+			}
+			
+			.innercircle { 
+				position: absolute;
+				margin: auto;
+				top:0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				border-radius: 50%;
+				background:#000;
+				width: 2px;
+				height: 2px; 
+			}
 		</style>
 	</head>
 	<body>
-
-		<div id="container">
-
-
+		<div class="outercircle">
+			<div class="innercircle">
+			</div>
 		</div>
-
+		
+		
 	</body>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 	<script src="js/three.min.js"></script>
@@ -32,11 +58,21 @@
 	<script src="js/Game.js"></script>
 	<script src="js/Interface.js"></script>
 	<script src="js/Player.js"></script>
+	<script src="js/Object.js"></script>
 	
 	<script>
 		Interface.setup();
 		Game.setupPhysics();
 		Game.setupRender();
+		
+		var halfExtents = new CANNON.Vec3(1,1,1);
+		var boxShape = new CANNON.Box(halfExtents);
+		var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
+		var boxBody = new CANNON.RigidBody(5,boxShape);
+		var boxMesh = new THREE.Mesh( boxGeometry, new THREE.MeshLambertMaterial( { color: 0xdddddd } ) );
+		
+		var box = new Object(boxBody, boxMesh);
+		box.setPosition(10, 10, 10);
 		
 		Game.begin();
 		

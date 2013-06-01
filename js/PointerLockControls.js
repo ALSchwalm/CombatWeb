@@ -45,7 +45,6 @@
     var velocity = cannonBody.velocity;
 
     var PI_2 = Math.PI / 2;
-	var projector = new THREE.Projector();
 	
     var onMouseMove = function ( event ) {
 
@@ -58,16 +57,6 @@
         pitchObject.rotation.x -= movementY * 0.002;
 
         pitchObject.rotation.x = Math.max( - PI_2, Math.min( PI_2, pitchObject.rotation.x ) );
-		/*
-		var vector = new THREE.Vector3(0,0,1);
-		projector.unprojectVector(vector, camera);
-		var raycaster = new THREE.Raycaster(sphereBody.position, vector.sub(sphereBody.position).normalize() );
-		var intersects = raycaster.intersectObjects( objects );
-
-		if ( intersects.length > 0 ) {
-			console.log("Object clicked")
-		}
-	*/
     };
 
     var onKeyDown = function ( event ) {
