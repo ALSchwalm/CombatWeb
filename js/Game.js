@@ -3,7 +3,7 @@ Game = {};
 
 Game.FPS = 60;
 Game.player = null;
-Game.aiPlayers = [];
+Game.otherPlayers = {};
 Game.objects = []; //Collection of object meshes
 
 
@@ -35,7 +35,7 @@ Game.setupPhysics = function(){
 	// We must add the contact materials to the world
 	Game.world.addContactMaterial(physicsContactMaterial);
 	
-	Game.player = new Player(0);
+	Game.player = new Player(Network.socket.socket.sessionid);
 	Game.world.add(Game.player.body);
 
 	// Create a plane
@@ -93,11 +93,24 @@ Game.setupRender = function() {
 	document.body.appendChild( Game.renderer.domElement );
 }
 
+Game.updateState = function(newState) {
+	for(var playerID in newState) {
+		if(playerID != Game.player.ID) {
+			if(!Game.otherPlayers[playerID]) {
+				Game.otherPlayers[playerID] = new Player(playerID);
+				Game.scene.add(Game.otherPlayers[playerID].mesh);
+				Game.world.add(Game.otherPlayers[playerID].body);
+			}
+			Game.otherPlayers[playerID].update(newState[playerID]);
+		}
+	}
+}
 
 Game.begin = function () {
 	var time = Date.now();
 	
 	function update() {
+		Network.socket.emit('stateUpdate', Game.player.getPostDetails());
 		requestAnimationFrame( update );
 		if(Game.controls.enabled){
 			Game.world.step(1/Game.FPS);

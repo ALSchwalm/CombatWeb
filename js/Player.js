@@ -9,4 +9,18 @@ function Player(_ID) {
 	this.body.position.set(0,radius,0);
 	this.body.linearDamping = 0.99;
 	
+	this.geometry = new THREE.SphereGeometry(1.3,50,50);
+	this.mesh = new THREE.Mesh( this.geometry, new THREE.MeshLambertMaterial( { color: 0xdddddd } ) );
+}
+
+Player.prototype.getPostDetails = function() {
+	var obj = {};
+	obj.position = this.body.position;
+	return obj;
+}
+
+Player.prototype.update = function(newState) {
+	//console.log(newState);
+	this.body.position.set(newState.position.x, newState.position.y, newState.position.z);
+	this.mesh.position.set(newState.position.x, newState.position.y, newState.position.z);
 }
