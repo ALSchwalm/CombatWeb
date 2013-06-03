@@ -13,6 +13,7 @@ Network.setup = function() {
 		so it will have no id. Set the ID here.
 	*/
 	Network.socket.on('connected', function (data) {
-		Game.player.ID = Network.socket.socket.sessionid
+		Game.player.ID = Network.socket.socket.sessionid;
+		Network.ID = Network.socket.socket.sessionid;
 	});
 }

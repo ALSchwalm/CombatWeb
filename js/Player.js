@@ -19,8 +19,7 @@ Player.prototype.getPostDetails = function() {
 	return obj;
 }
 
-Player.prototype.update = function(newState) {
-	//console.log(newState);
-	this.body.position.set(newState.position.x, newState.position.y, newState.position.z);
-	this.mesh.position.set(newState.position.x, newState.position.y, newState.position.z);
+Player.prototype.update = function(playerState) {
+	this.body.position = playerState.position;
+	this.mesh.position = playerState.position;
 }

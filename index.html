@@ -16,7 +16,7 @@
 				font-family: arial;
 			}
 			
-			.outercircle {
+			#outercircle {
 				position: absolute;
 				margin: auto;
 				top:0;
@@ -29,7 +29,7 @@
 				height: 4px; 
 			}
 			
-			.innercircle { 
+			#innercircle { 
 				position: absolute;
 				margin: auto;
 				top:0;
@@ -44,8 +44,8 @@
 		</style>
 	</head>
 	<body>
-		<div class="outercircle">
-			<div class="innercircle">
+		<div id="outercircle">
+			<div id="innercircle">
 			</div>
 		</div>
 		
@@ -55,6 +55,7 @@
 	<script src="js/three.min.js"></script>
 	<script src="js/cannon.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="js/cycle.js"></script>
 	<script src="js/PointerLockControls.js"></script>
 	<script src="js/Network.js"></script>
 	<script src="js/Game.js"></script>
