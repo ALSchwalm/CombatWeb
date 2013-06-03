@@ -5,7 +5,6 @@ Game.FPS = 60;
 Game.player = null;
 Game.otherPlayers = {};
 Game.objects = []; //Collection of object meshes
-Game.time = 0;
 
 Game.setupPhysics = function(){
 	// Setup our world
@@ -97,7 +96,7 @@ Game.updateState = function(newState) {
 
 	for(var i=0; i < newState.players.length; i++) {
 		if(newState.players[i].ID != Game.player.ID) {
-			if(!Game.otherPlayers[playerID]) {	//This should be a sent as a separate notification
+			if(!Game.otherPlayers[playerID]) {	//TODO This should be a sent as a separate notification
 				Game.otherPlayers[playerID] = new Player(playerID);
 				Game.scene.add(Game.otherPlayers[playerID].mesh);
 				Game.world.add(Game.otherPlayers[playerID].body);
@@ -108,12 +107,14 @@ Game.updateState = function(newState) {
 			Game.player.update(newState.players[i]);
 		}
 	}
-	
-	if(Game.time > newState.times[Network.ID]) {
-		var timeDiff = Game.time - newState.times[Network.ID]
-		for(var i=0; i < timeDiff; i++)
-			Game.world.step(1/Game.FPS);
+
+
+
+	for(var i=0; i < (Network.latency / (1000/60) - 1); i++) {
+		console.log("rewind");
+		Game.world.step(1/Game.FPS);
 	}
+
 }
 
 Game.begin = function () {
@@ -131,8 +132,11 @@ Game.begin = function () {
 		Game.controls.update( Date.now() - time );
 		Game.renderer.render( Game.scene, Game.camera );
 		time = Date.now();
-		requestAnimationFrame( update );
-		Network.socket.emit('stateUpdate', Game.player.getPostDetails());
+		//requestAnimationFrame( update );
+		//Network.socket.emit('stateUpdate', null);
 	}
-	update();
+	setInterval(update, 1000/60);
+	
+	setInterval(Network.findLatency, 2000);
+	
 }

@@ -13,13 +13,8 @@ function Player(_ID) {
 	this.mesh = new THREE.Mesh( this.geometry, new THREE.MeshLambertMaterial( { color: 0xdddddd } ) );
 }
 
-Player.prototype.getPostDetails = function() {
-	var obj = {};
-	obj.position = this.body.position;
-	return obj;
-}
+Player.prototype.setState = function(state) {
+	this.body.position = state.position;
+	this.mesh.position = state.position;
 
-Player.prototype.update = function(playerState) {
-	this.body.position = playerState.position;
-	this.mesh.position = playerState.position;
 }

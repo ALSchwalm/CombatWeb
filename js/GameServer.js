@@ -1,6 +1,7 @@
 var CANNON = require('./cannon.js');
 
 Game = {};
+Game.players = {};
 Game.objects = [];
 
 Game.setupPhysics = function(){
@@ -43,4 +44,15 @@ Game.setupPhysics = function(){
 	boxBody.position.set(10,10,10);
 	Game.world.add(boxBody);
 	Game.objects.push(boxBody);
+}
+
+Game.getState = function() {
+	var gameState = {
+		players: {}
+	};
+	
+	for(var player in Game.players) {
+		gameState.players[player] = Game.players[player].getState();
+	}
+	return gameState;
 }

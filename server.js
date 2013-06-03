@@ -1,7 +1,9 @@
 
 var connect = require('connect');
-var CANNON = require('./serverlibs/cannon.js');
-require('./serverlibs/Game.js');
+var CANNON = require('./js/cannon.js');
+var player = require('./js/PlayerServer.js');
+require('./js/GameServer.js');
+
 
 Game.setupPhysics();
 
@@ -11,20 +13,17 @@ var server = connect.createServer(
 
 var io = require('socket.io').listen(server);
 
-var gameState = {times:{}};
-var time = 0;
-
 io.sockets.on('connection', function (socket) {
 	socket.on('disconnect', function () {
-		//delete gameState[socket.id];
+		io.sockets.emit('playerDisconnect', socket.id);
 	});
 	
 	socket.on('stateUpdate', function (data) {
 		updateState(socket, data);
 	});
 	
+	Game.players[socket.id] = new player.Player(socket.id);
 	socket.emit("connected"); //send server time to the player
-	gameState.times[socket.id] = 0;
 });
 
 function updateState(socket, data) {
@@ -33,10 +32,7 @@ function updateState(socket, data) {
 
 
 setInterval( function() {
-	io.sockets.emit('currentState', gameState)
-	for(var i in gameState.times) {
-		gameState.times[i]++;
-	}
+	io.sockets.emit('currentState', Game.getState())
 }, 40);
 
 setInterval( function() {
