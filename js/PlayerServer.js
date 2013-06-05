@@ -1,4 +1,5 @@
 var CANNON = require('./cannon.js');
+var control = require('./ControlsServer.js');
 
 function Player(_ID) {
 	this.ID = _ID;
@@ -8,6 +9,8 @@ function Player(_ID) {
 	this.body = new CANNON.RigidBody(mass, this.shape, defaultMaterial);
 	this.body.position.set(0,radius,0);
 	this.body.linearDamping = 0.99;
+	
+	this.controls = control.control(null, this.body);
 }
 
 Player.prototype.getState = function() {

@@ -14,7 +14,7 @@ function Player(_ID) {
 }
 
 Player.prototype.setState = function(state) {
-	this.body.position = state.position;
+	this.body.position = new CANNON.Vec3(state.position.x, state.position.y, state.position.z);
 	this.mesh.position = state.position;
 
 }

@@ -22,6 +22,15 @@ io.sockets.on('connection', function (socket) {
 		updateState(socket, data);
 	});
 	
+	socket.on('keyUp', function(event) {
+		Game.players[socket.id].controls.onKeyUp(event);
+	});
+		
+	socket.on('keyDown', function(event) {
+		Game.players[socket.id].controls.onKeyDown(event);
+	});
+	
+	
 	Game.players[socket.id] = new player.Player(socket.id);
 	socket.emit("connected"); //send server time to the player
 });

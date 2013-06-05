@@ -1,7 +1,11 @@
+
 /**
  * @author mrdoob / http://mrdoob.com/
  * @author schteppe / https://github.com/schteppe
  */
+ var CANNON = require('./cannon.js');
+ var THREE = require('./ThreeServer.js');
+ 
  var PointerLockControls = function ( camera, cannonBody ) {
 
     var eyeYPos = 2; // eyes are 2 meters above the ground
@@ -46,7 +50,7 @@
 
     var PI_2 = Math.PI / 2;
 	
-    var onMouseMove = function ( event ) {
+    this.onMouseMove = function ( event ) {
 
         if ( scope.enabled === false ) return;
 
@@ -59,11 +63,9 @@
         pitchObject.rotation.x = Math.max( - PI_2, Math.min( PI_2, pitchObject.rotation.x ) );
     };
 
-    var onKeyDown = function ( event ) {
-		
-		Network.socket.emit('keyDown', event);
+    this.onKeyDown = function ( keyCode ) {
 	
-        switch ( event.keyCode ) {
+        switch ( keyCode ) {
 
             case 38: // up
             case 87: // w
@@ -94,11 +96,9 @@
 
     };
 
-    var onKeyUp = function ( event ) {
-
-		Network.socket.emit('keyUp', event);
+    this.onKeyUp = function ( keyCode ) {
 	
-        switch( event.keyCode ) {
+        switch( keyCode ) {
 
             case 38: // up
             case 87: // w
@@ -123,10 +123,6 @@
         }
 
     };
-
-    document.addEventListener( 'mousemove', onMouseMove, false );
-    document.addEventListener( 'keydown', onKeyDown, false );
-    document.addEventListener( 'keyup', onKeyUp, false );
 
     this.enabled = false;
 
@@ -174,3 +170,12 @@
         cannonBody.position.copy(yawObject.position);
     };
 };
+
+module.exports = {
+  control: PointerLockControls 
+  /*
+  bar: function () {
+
+  }*/
+};
+

@@ -94,21 +94,14 @@ Game.setupRender = function() {
 
 Game.updateState = function(newState) {
 
-	for(var i=0; i < newState.players.length; i++) {
-		if(newState.players[i].ID != Game.player.ID) {
-			if(!Game.otherPlayers[playerID]) {	//TODO This should be a sent as a separate notification
-				Game.otherPlayers[playerID] = new Player(playerID);
-				Game.scene.add(Game.otherPlayers[playerID].mesh);
-				Game.world.add(Game.otherPlayers[playerID].body);
-			}
-			Game.otherPlayers[newState.players[i].ID].update(newState.players[i]);
+	for(var playerID in newState.players) {
+		if(playerID != Game.player.ID) {
+			Game.otherPlayers[playerID].update(newState.players[playerID]);
 		}
 		else {
-			Game.player.update(newState.players[i]);
+			Game.player.setState(newState.players[playerID]);
 		}
 	}
-
-
 
 	for(var i=0; i < (Network.latency / (1000/60) - 1); i++) {
 		console.log("rewind");
