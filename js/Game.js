@@ -6,6 +6,9 @@ Game.player = null;
 Game.otherPlayers = {};
 Game.objects = []; //Collection of object meshes
 
+Game.receivedStateBuffer = [];
+Game.projectedStateBuffer = [];
+
 Game.setupPhysics = function(){
 	// Setup our world
 	Game.world = new CANNON.World();
@@ -107,24 +110,61 @@ Game.updateState = function(newState) {
 		console.log("rewind");
 		Game.world.step(1/Game.FPS);
 	}
-
 }
 
-Game.begin = function () {
-	var time = Date.now();
+Game.interpolate = function() {
+
+
+	//Only interpolate between received packets
+	if (Game.receivedStateBuffer.length < 2) return;
 	
-	function update() {
-		if(Game.controls.enabled){
-			Game.world.step(1/Game.FPS);
+	//Drop all previous interpolated states. This prevents any kind of build up of states, if
+	//we have < 60 fps etc.
+	Game.projectedStateBuffer = [];
+	var oldState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-2];
+	var newState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-1];
+	
+	Game.interpConst = 5;
+	
+	for(var i=0; i < Game.interpConst; i++) {
+		var interpState = {players:{}};
+		for(var player in newState.players) {
+			interpState.players[player] = {
+				position : { x : Utils.averageValue(oldState.players[player].position.x, 
+													newState.players[player].position.x,
+													Game.interpConst,
+													i),
+							y : Utils.averageValue(oldState.players[player].position.y, 
+													newState.players[player].position.y,
+													Game.interpConst,
+													i),
+							z : Utils.averageValue(oldState.players[player].position.z, 
+													newState.players[player].position.z,
+													Game.interpConst,
+													i)
+				}
+			}
 		}
 		
+		Game.projectedStateBuffer.push(interpState);
+	}
+	Game.receivedStateBuffer.splice(Game.receivedStateBuffer.indexOf(oldState), 1);
+}
+
+
+Game.begin = function () {
+	function update() {
 		for(var i in Game.objects) {
-			Game.objects[i].update();
+			//Game.objects[i].update();
+		}
+		
+		if(Game.projectedStateBuffer.length > 0) {
+			Game.updateState(Game.projectedStateBuffer[0]);
+			Game.projectedStateBuffer.splice(0, 1);
 		}
 
-		Game.controls.update( Date.now() - time );
+		Game.controls.update( );
 		Game.renderer.render( Game.scene, Game.camera );
-		time = Date.now();
 		//requestAnimationFrame( update );
 		//Network.socket.emit('stateUpdate', null);
 	}

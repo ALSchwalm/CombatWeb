@@ -6,7 +6,8 @@ Network.setup = function() {
 	Network.socket = io.connect('130.18.10.109');
 	
 	Network.socket.on('currentState', function (data) {
-		Game.updateState(data);
+		Game.receivedStateBuffer.push(data);
+		Game.interpolate()
 	});
 
 	/*

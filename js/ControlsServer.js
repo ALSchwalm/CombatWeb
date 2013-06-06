@@ -7,7 +7,7 @@
  var THREE = require('./ThreeServer.js');
  
  var PointerLockControls = function ( camera, cannonBody ) {
-
+	
     var eyeYPos = 2; // eyes are 2 meters above the ground
     var velocityFactor = 0.2;
     var jumpVelocity = 20;
@@ -51,8 +51,6 @@
     var PI_2 = Math.PI / 2;
 	
     this.onMouseMove = function ( event ) {
-
-        if ( scope.enabled === false ) return;
 
         var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
         var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
@@ -124,8 +122,6 @@
 
     };
 
-    this.enabled = false;
-
     this.getObject = function () {
         return yawObject;
     };
@@ -138,8 +134,7 @@
     // Moves the camera to the Cannon.js object position and adds velocity to the object if the run key is down
     var inputVelocity = new THREE.Vector3();
     this.update = function ( delta ) {
-
-        if ( scope.enabled === false ) return;
+		
 
         delta *= 0.5;
 
@@ -164,18 +159,15 @@
         inputVelocity.applyQuaternion(quat);
 
         // Add to the object
-        velocity.x += inputVelocity.x;
-        velocity.z += inputVelocity.z;
+        cannonBody.velocity.x += inputVelocity.x;
+        cannonBody.velocity.z += inputVelocity.z;
 
         cannonBody.position.copy(yawObject.position);
+
     };
 };
 
 module.exports = {
-  control: PointerLockControls 
-  /*
-  bar: function () {
-
-  }*/
-};
+	PointerLockControls : PointerLockControls
+}
 

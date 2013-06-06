@@ -12,6 +12,26 @@ THREE.Vector3.prototype = {
 
 	constructor: THREE.Vector3,
 
+	set: function ( x, y, z ) {
+
+		this.x = x;
+		this.y = y;
+		this.z = z;
+
+		return this;
+
+	},
+	
+	copy: function ( v ) {
+
+		this.x = v.x;
+		this.y = v.y;
+		this.z = v.z;
+
+		return this;
+
+	},
+	
 	applyQuaternion: function ( q ) {
 
 		var x = this.x;
