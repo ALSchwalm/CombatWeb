@@ -30,6 +30,7 @@
         pitchObject.rotation.x -= movementY * 0.002;
 
         pitchObject.rotation.x = Math.max( - PI_2, Math.min( PI_2, pitchObject.rotation.x ) );
+		
     };
 
     var onKeyDown = function ( event ) {
@@ -56,6 +57,14 @@
         targetVec.set(0,0,-1);
         targetVec.applyQuaternion(quat);
     }
+	
+	this.sendMousePosition = function() {
+		var mouseState = {
+			rotation : yawObject.rotation,
+			matrixWorld : yawObject.matrixWorld
+		};
+		Network.socket.emit('mouseState', mouseState);
+	}
 	
 	this.update = function () {
 		cannonBody.position.copy(yawObject.position);

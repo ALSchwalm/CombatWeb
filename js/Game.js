@@ -105,11 +105,6 @@ Game.updateState = function(newState) {
 			Game.player.setState(newState.players[playerID]);
 		}
 	}
-
-	for(var i=0; i < (Network.latency / (1000/60) - 1); i++) {
-		console.log("rewind");
-		Game.world.step(1/Game.FPS);
-	}
 }
 
 Game.interpolate = function() {
@@ -171,5 +166,6 @@ Game.begin = function () {
 	setInterval(update, 1000/60);
 	
 	setInterval(Network.findLatency, 2000);
+	setInterval(Game.controls.sendMousePosition, 20);
 	
 }

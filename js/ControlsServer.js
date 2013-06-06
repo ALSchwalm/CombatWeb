@@ -130,7 +130,13 @@
         targetVec.set(0,0,-1);
         targetVec.applyQuaternion(quat);
     }
-
+	
+	this.updateMouseState = function(mouseState) {
+		yawObject.rotation = mouseState.rotation;
+		yawObject.matrixWorld = mouseState.matrixWorld;
+	}
+	
+	
     // Moves the camera to the Cannon.js object position and adds velocity to the object if the run key is down
     var inputVelocity = new THREE.Vector3();
     this.update = function ( delta ) {

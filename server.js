@@ -32,6 +32,10 @@ io.sockets.on('connection', function (socket) {
 		console.log("keyDown");
 	});
 	
+	socket.on('mouseState', function(mouseState) {
+		Game.players[socket.id].controls.updateMouseState(mouseState)
+	});
+	
 	
 	Game.players[socket.id] = new player.Player(socket.id);
 	Game.world.add(Game.players[socket.id].body);
@@ -45,13 +49,13 @@ function updateState(socket, data) {
 
 setInterval( function() {
 	io.sockets.emit('currentState', Game.getState())
-}, 100);
+}, 80);
 
 var time = Date.now();
 setInterval( function() {
 	for(var player in Game.players) {
 		Game.players[player].controls.update( Date.now() - time );
 	}
-	Game.world.step(1/60);
+	Game.world.step(1/75);
 	time = Date.now();
-}, 1000/60);
+}, 1000/75);
