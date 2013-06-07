@@ -119,7 +119,7 @@ Game.interpolate = function() {
 	var oldState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-2];
 	var newState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-1];
 	
-	Game.interpConst = 5;
+	Game.interpConst = 6;
 	
 	for(var i=0; i < Game.interpConst; i++) {
 		var interpState = {players:{}};
@@ -149,10 +149,6 @@ Game.interpolate = function() {
 
 Game.begin = function () {
 	function update() {
-		for(var i in Game.objects) {
-			//Game.objects[i].update();
-		}
-		
 		if(Game.projectedStateBuffer.length > 0) {
 			Game.updateState(Game.projectedStateBuffer[0]);
 			Game.projectedStateBuffer.splice(0, 1);
@@ -160,12 +156,13 @@ Game.begin = function () {
 
 		Game.controls.update( );
 		Game.renderer.render( Game.scene, Game.camera );
-		//requestAnimationFrame( update );
+		requestAnimationFrame( update );
 		//Network.socket.emit('stateUpdate', null);
 	}
-	setInterval(update, 1000/60);
+	update();
+	//setInterval(update, 1000/60);
 	
 	setInterval(Network.findLatency, 2000);
-	setInterval(Game.controls.sendMousePosition, 20);
+	setInterval(Game.controls.sendMousePosition, 10);
 	
 }

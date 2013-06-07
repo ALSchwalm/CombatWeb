@@ -16,6 +16,7 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
 	socket.on('disconnect', function () {
 		io.sockets.emit('playerDisconnect', socket.id);
+		delete Game.players[socket.id];
 	});
 	
 	socket.on('stateUpdate', function (data) {
@@ -56,6 +57,6 @@ setInterval( function() {
 	for(var player in Game.players) {
 		Game.players[player].controls.update( Date.now() - time );
 	}
-	Game.world.step(1/75);
+	Game.world.step(1/60);
 	time = Date.now();
-}, 1000/75);
+}, 1000/60);

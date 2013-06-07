@@ -3,7 +3,7 @@ Network = {};
 Network.latency = 0;
 
 Network.setup = function() {
-	Network.socket = io.connect('130.18.10.109');
+	Network.socket = io.connect(location.host);
 	
 	Network.socket.on('currentState', function (data) {
 		Game.receivedStateBuffer.push(data);

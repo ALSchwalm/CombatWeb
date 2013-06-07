@@ -1,0 +1,8 @@
+{
+    "name":"combat",
+    "version":"0.0.1",
+    "dependencies":{
+        "connect":"",
+		"socket.io":""
+    }
+}
