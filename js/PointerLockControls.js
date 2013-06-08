@@ -139,8 +139,6 @@
     var inputVelocity = new THREE.Vector3();
     this.update = function ( delta ) {
 
-        if ( scope.enabled === false ) return;
-
         delta *= 0.5;
 
         inputVelocity.set(0,0,0);

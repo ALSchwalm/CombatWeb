@@ -12,12 +12,13 @@ var io = require('socket.io').listen(server);
 //AppFog does not support websockets yet
 io.configure('development', function(){
   io.set('transports', ['xhr-polling']);
+  io.set('close timeout', 2);
 });
 
 io.sockets.on('connection', function (socket) {
 
 	socket.on('disconnect', function () {
-		io.sockets.emit('playerDisconnect', socket.id);
+		io.sockets.emit('playerDisconnected', socket.id);
 		delete currentState.players[socket.id];
 	});
 	

@@ -29,7 +29,7 @@ Interface.setup = function() {
 									  element.mozRequestPointerLock || 
 									  element.webkitRequestPointerLock;
 			element.requestPointerLock();
-			
+			/*
 			var onMouseDown = function( event ) {
 				var projector = new THREE.Projector();
 				var vector = new THREE.Vector3(0,0,1);
@@ -46,7 +46,7 @@ Interface.setup = function() {
 				}
 			}
 			onMouseDown();
-			
+			*/
 		});
 	}
 }

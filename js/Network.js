@@ -27,6 +27,14 @@ Network.setup = function() {
 		Game.scene.add(Game.otherPlayers[data].mesh);
 	});
 	
+	Network.socket.on('playerDisconnected', function(data) {
+		console.log("received disconnect");
+		if (Game.otherPlayers[data]) {
+			Game.scene.remove(Game.otherPlayers[data].mesh);
+			delete Game.otherPlayers[data];
+		}
+	});
+	
 }
 
 Network.findLatency = function() {

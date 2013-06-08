@@ -138,6 +138,14 @@ Game.updateState = function(newState) {
 			}
 		}
 	}
+	
+	for(var playerID in Game.otherPlayers) {
+		if (!newState.players[playerID]) {
+			Game.scene.remove(Game.otherPlayers[playerID].mesh);
+			delete Game.otherPlayers[playerID];
+		}
+	}
+	
 }
 
 Game.interpolate = function() {
@@ -202,5 +210,5 @@ Game.begin = function () {
 	
 	setInterval(function() {
 		Network.socket.emit("playerState", Game.player.getState())
-	}, 80);
+	}, 20);
 }
