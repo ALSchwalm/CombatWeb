@@ -1,11 +1,7 @@
 
 var connect = require('connect');
-var CANNON = require('./js/cannon.js');
-var player = require('./js/PlayerServer.js');
-require('./js/GameServer.js');
 
-
-Game.setupPhysics();
+var currentState = {players: {}}
 
 var server = connect.createServer(
     connect.static(__dirname)
@@ -13,50 +9,34 @@ var server = connect.createServer(
 
 var io = require('socket.io').listen(server);
 
+//AppFog does not support websockets yet
+io.configure('development', function(){
+  io.set('transports', ['xhr-polling']);
+});
+
 io.sockets.on('connection', function (socket) {
+
 	socket.on('disconnect', function () {
 		io.sockets.emit('playerDisconnect', socket.id);
-		delete Game.players[socket.id];
+		delete currentState.players[socket.id];
 	});
 	
-	socket.on('stateUpdate', function (data) {
+	socket.on('playerState', function (data) {
 		updateState(socket, data);
 	});
 	
-	socket.on('keyUp', function(event) {
-		Game.players[socket.id].controls.onKeyUp(event);
-		console.log("keyUp");
-	});
-		
-	socket.on('keyDown', function(event) {
-		Game.players[socket.id].controls.onKeyDown(event);
-		console.log("keyDown");
-	});
-	
-	socket.on('mouseState', function(mouseState) {
-		Game.players[socket.id].controls.updateMouseState(mouseState)
-	});
-	
-	
-	Game.players[socket.id] = new player.Player(socket.id);
-	Game.world.add(Game.players[socket.id].body);
-	socket.emit("connected"); //send server time to the player
+	currentState.players[socket.id] = {
+		position : {x: 0, y: 0, z: 0}
+	};
+	socket.emit("connected", {seed: "cats", state: currentState}); //send current seed to the player
+	socket.broadcast.emit("playerConnected", socket.id);
 });
 
 function updateState(socket, data) {
-	//gameState[socket.id] = data;
+	currentState.players[socket.id] = data;
 }
 
 
 setInterval( function() {
-	io.sockets.emit('currentState', Game.getState())
+	io.sockets.emit('currentState', currentState)
 }, 80);
-
-var time = Date.now();
-setInterval( function() {
-	for(var player in Game.players) {
-		Game.players[player].controls.update( Date.now() - time );
-	}
-	Game.world.step(1/60);
-	time = Date.now();
-}, 1000/60);

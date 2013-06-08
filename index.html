@@ -62,21 +62,13 @@
 	<script src="js/Player.js"></script>
 	<script src="js/Object.js"></script>
 	<script src="js/Utils.js"></script>
+	<script src="js/seedrandom.js"></script>
 	
 	<script>
 		Network.setup();
 		Interface.setup();
 		Game.setupPhysics();
 		Game.setupRender();
-		
-		var halfExtents = new CANNON.Vec3(1,1,1);
-		var boxShape = new CANNON.Box(halfExtents);
-		var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
-		var boxBody = new CANNON.RigidBody(5,boxShape);
-		var boxMesh = new THREE.Mesh( boxGeometry, new THREE.MeshLambertMaterial( { color: 0xdddddd } ) );
-		
-		var box = new Object(boxBody, boxMesh);
-		box.setPosition(10, 10, 10);
 		
 		Game.begin();
 		

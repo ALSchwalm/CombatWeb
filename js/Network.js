@@ -3,13 +3,13 @@ Network = {};
 Network.latency = 0;
 
 Network.setup = function() {
-	Network.socket = io.connect(location.host);
-	
+	Network.socket = io.connect();
+
 	Network.socket.on('currentState', function (data) {
 		Game.receivedStateBuffer.push(data);
 		Game.interpolate()
+		//Game.updateState(data);
 	});
-
 	/*
 		The socket has likely not been connected at the time the player is made,
 		so it will have no id. Set the ID here.
@@ -17,7 +17,15 @@ Network.setup = function() {
 	Network.socket.on('connected', function (data) {
 		Game.player.ID = Network.socket.socket.sessionid;
 		Network.ID = Network.socket.socket.sessionid;
+		Game.seed = data.seed;
+		Game.receivedStateBuffer.push(data.state);
 	});
+	
+	Network.socket.on('playerConnected', function(data) {
+		Game.otherPlayers[data] = new Player(data);
+		Game.scene.add(Game.otherPlayers[data].mesh);
+	});
+	
 }
 
 Network.findLatency = function() {

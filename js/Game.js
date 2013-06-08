@@ -4,7 +4,6 @@ Game = {};
 Game.FPS = 60;
 Game.player = null;
 Game.otherPlayers = {};
-Game.objects = []; //Collection of object meshes
 
 Game.receivedStateBuffer = [];
 Game.projectedStateBuffer = [];
@@ -48,7 +47,7 @@ Game.setupPhysics = function(){
 
 
 Game.setupRender = function() {
-	Game.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+	Game.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
 	Game.scene = new THREE.Scene();
 	Game.scene.fog = new THREE.Fog( 0x000000, 0, 500 );
@@ -56,15 +55,16 @@ Game.setupRender = function() {
 	var ambient = new THREE.AmbientLight( 0x222222 );
 	Game.scene.add( ambient );
 
-	var light = new THREE.SpotLight( 0xffffff );
-	light.position.set( 10, 30, 20 );
+	var light = new THREE.DirectionalLight( 0xffffff );
+	light.position.set( 10, 60, 20 );
 	light.target.position.set( 0, 0, 0 );
 
 	light.castShadow = true;
+	//light.onlyshadow = true;
 
 	light.shadowCameraNear = 20;
-	light.shadowCameraFar = 50;//camera.far;
-	light.shadowCameraFov = 40;
+	light.shadowCameraFar = 150;//camera.far;
+	light.shadowCameraFov = 150;
 
 	light.shadowMapDarkness = 0.8;
 	light.shadowMapWidth = 2*512;
@@ -94,22 +94,53 @@ Game.setupRender = function() {
 
 	document.body.appendChild( Game.renderer.domElement );
 }
+Game.objects = [];
+Game.seedWorld = function(seed) {
+	Math.seedrandom(seed);
+	
+	var worldObjects = Math.random() * 20 + 2;
+	
+	for(var i =0; i < worldObjects; i++) {
+		var halfExtents = new CANNON.Vec3(10,10,10);
+		var boxShape = new CANNON.Box(halfExtents);
+		var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
+		var boxBody = new CANNON.RigidBody(0,boxShape);
+		boxBody.motionstate = 2;
+		var boxMesh = new THREE.Mesh( boxGeometry, new THREE.MeshLambertMaterial( { color: Utils.randomColor() } ) );
+		
+		var randomPosition = {  x : 200*Math.random() - 100,
+								y : 20*Math.random(),
+								z : 200*Math.random() - 100}
+		
+		boxBody.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
+		var angle = Math.random();
+		boxBody.quaternion.setFromAxisAngle(new CANNON.Vec3(angle, 0, 1-angle),Math.random()*2*Math.PI);
+
+		boxBody.position.copy(boxMesh.position);
+		boxBody.quaternion.copy(boxMesh.quaternion);
+		boxMesh.castShadow = true;
+		boxMesh.receiveShadow = false;
+		boxMesh.useQuaternion = true;
+		Game.objects.push(boxBody);
+		Game.scene.add(boxMesh);
+		Game.world.add(boxBody);
+	}
+}
 
 Game.updateState = function(newState) {
-
 	for(var playerID in newState.players) {
 		if(playerID != Game.player.ID) {
-			Game.otherPlayers[playerID].update(newState.players[playerID]);
-		}
-		else {
-			Game.player.setState(newState.players[playerID]);
+			if (Game.otherPlayers[playerID])
+				Game.otherPlayers[playerID].setState(newState.players[playerID]);
+			else {
+				Game.otherPlayers[playerID] = new Player(playerID);
+				Game.scene.add(Game.otherPlayers[playerID].mesh);
+			}
 		}
 	}
 }
 
 Game.interpolate = function() {
-
-
 	//Only interpolate between received packets
 	if (Game.receivedStateBuffer.length < 2) return;
 	
@@ -119,25 +150,30 @@ Game.interpolate = function() {
 	var oldState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-2];
 	var newState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-1];
 	
-	Game.interpConst = 6;
+	Game.interpConst = (Network.latency+80)/(1000/Game.FPS);
 	
 	for(var i=0; i < Game.interpConst; i++) {
 		var interpState = {players:{}};
 		for(var player in newState.players) {
-			interpState.players[player] = {
-				position : { x : Utils.averageValue(oldState.players[player].position.x, 
-													newState.players[player].position.x,
-													Game.interpConst,
-													i),
-							y : Utils.averageValue(oldState.players[player].position.y, 
-													newState.players[player].position.y,
-													Game.interpConst,
-													i),
-							z : Utils.averageValue(oldState.players[player].position.z, 
-													newState.players[player].position.z,
-													Game.interpConst,
-													i)
+			if (oldState.players[player]) {
+				interpState.players[player] = {
+					position : { x : Utils.averageValue(oldState.players[player].position.x, 
+														newState.players[player].position.x,
+														Game.interpConst,
+														i),
+								y : Utils.averageValue(oldState.players[player].position.y, 
+														newState.players[player].position.y,
+														Game.interpConst,
+														i),
+								z : Utils.averageValue(oldState.players[player].position.z, 
+														newState.players[player].position.z,
+														Game.interpConst,
+														i)
+					}
 				}
+			}
+			else {
+				interpState.players[player] = newState.players[player];
 			}
 		}
 		
@@ -148,21 +184,23 @@ Game.interpolate = function() {
 
 
 Game.begin = function () {
+	var time = Date.now();
 	function update() {
 		if(Game.projectedStateBuffer.length > 0) {
 			Game.updateState(Game.projectedStateBuffer[0]);
 			Game.projectedStateBuffer.splice(0, 1);
 		}
-
-		Game.controls.update( );
+		Game.world.step(1/60);
+		Game.controls.update(Date.now() - time );
 		Game.renderer.render( Game.scene, Game.camera );
 		requestAnimationFrame( update );
-		//Network.socket.emit('stateUpdate', null);
+		time = Date.now();
 	}
 	update();
-	//setInterval(update, 1000/60);
 	
 	setInterval(Network.findLatency, 2000);
-	setInterval(Game.controls.sendMousePosition, 10);
 	
+	setInterval(function() {
+		Network.socket.emit("playerState", Game.player.getState())
+	}, 80);
 }
