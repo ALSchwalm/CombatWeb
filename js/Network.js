@@ -19,6 +19,7 @@ Network.setup = function() {
 		Network.ID = Network.socket.socket.sessionid;
 		Game.seed = data.seed;
 		Game.receivedStateBuffer.push(data.state);
+		Game.seedWorld(Game.seed);
 	});
 	
 	Network.socket.on('playerConnected', function(data) {

@@ -150,7 +150,7 @@ Game.interpolate = function() {
 	var oldState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-2];
 	var newState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-1];
 	
-	Game.interpConst = (Network.latency+80)/(1000/Game.FPS);
+	Game.interpConst = (Network.latency+80)/(1000/Game.FPS); //80 is the time between server updates
 	
 	for(var i=0; i < Game.interpConst; i++) {
 		var interpState = {players:{}};
