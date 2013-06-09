@@ -40,4 +40,4 @@ function updateState(socket, data) {
 
 setInterval( function() {
 	io.sockets.emit('currentState', currentState)
-}, 80);
+}, 50);

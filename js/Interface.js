@@ -49,6 +49,13 @@ Interface.setup = function() {
 			*/
 		});
 	}
+	var container = document.createElement( 'div' );
+	document.body.appendChild( container );
+	Interface.stats = new Stats();
+	Interface.stats.domElement.style.position = 'absolute';
+	Interface.stats.domElement.style.top = '0px';
+	container.appendChild( Interface.stats.domElement );
+	
 }
 
 Interface.onWindowResize = function() {

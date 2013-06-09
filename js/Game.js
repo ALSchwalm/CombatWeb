@@ -67,8 +67,8 @@ Game.setupRender = function() {
 	light.shadowCameraFov = 150;
 
 	light.shadowMapDarkness = 0.8;
-	light.shadowMapWidth = 2*512;
-	light.shadowMapHeight = 2*512;
+	light.shadowMapWidth = 2*2048;
+	light.shadowMapHeight = 2*2048;
 	light.shadowCameraVisible = true;
 	
 	Game.scene.add( light );
@@ -98,7 +98,7 @@ Game.objects = [];
 Game.seedWorld = function(seed) {
 	Math.seedrandom(seed);
 	
-	var worldObjects = Math.random() * 20 + 2;
+	var worldObjects = Math.random() * 50 + 2;
 	
 	for(var i =0; i < worldObjects; i++) {
 		var halfExtents = new CANNON.Vec3(10,10,10);
@@ -106,10 +106,23 @@ Game.seedWorld = function(seed) {
 		var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
 		var boxBody = new CANNON.RigidBody(0,boxShape);
 		boxBody.motionstate = 2;
-		var boxMesh = new THREE.Mesh( boxGeometry, new THREE.MeshLambertMaterial( { color: Utils.randomColor() } ) );
+		
+		
+		var material = new THREE.ShaderMaterial( {
+			uniforms:  {
+							redWeight: 	{ type: "f", value: Math.random() },
+							blueWeight:	{ type: "f", value: Math.random() },
+							greenWeight:{ type: "f", value: Math.random() }
+						},
+			vertexShader: document.getElementById( 'vertexShader' ).textContent,
+			fragmentShader: document.getElementById( 'fragment_shader1' ).textContent
+			});
+		
+		var tempColor = Utils.randomColor();
+		var boxMesh = new THREE.Mesh( boxGeometry, material);
 		
 		var randomPosition = {  x : 200*Math.random() - 100,
-								y : 20*Math.random(),
+								y : 20*Math.random() - 5,
 								z : 200*Math.random() - 100}
 		
 		boxBody.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
@@ -119,7 +132,7 @@ Game.seedWorld = function(seed) {
 		boxBody.position.copy(boxMesh.position);
 		boxBody.quaternion.copy(boxMesh.quaternion);
 		boxMesh.castShadow = true;
-		boxMesh.receiveShadow = false;
+		boxMesh.receiveShadow = true;
 		boxMesh.useQuaternion = true;
 		Game.objects.push(boxBody);
 		Game.scene.add(boxMesh);
@@ -128,6 +141,7 @@ Game.seedWorld = function(seed) {
 }
 
 Game.updateState = function(newState) {
+	Game.currentState = newState;
 	for(var playerID in newState.players) {
 		if(playerID != Game.player.ID) {
 			if (Game.otherPlayers[playerID])
@@ -148,17 +162,17 @@ Game.updateState = function(newState) {
 	
 }
 
-Game.interpolate = function() {
-	//Only interpolate between received packets
-	if (Game.receivedStateBuffer.length < 2) return;
-	
+Game.interpolate = function(newState) {	
 	//Drop all previous interpolated states. This prevents any kind of build up of states, if
 	//we have < 60 fps etc.
 	Game.projectedStateBuffer = [];
-	var oldState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-2];
-	var newState = Game.receivedStateBuffer[Game.receivedStateBuffer.length-1];
 	
-	Game.interpConst = (Network.latency+80)/(1000/Game.FPS); //80 is the time between server updates
+	if (!Game.currentState)
+		Game.currentState = newState;
+	var oldState = Game.currentState;
+
+	
+	Game.interpConst = (Network.latency+50)/(1000/Game.FPS); //(oldState.time - newState.time)/(1000/60); //; //80 is the time between server updates
 	
 	for(var i=0; i < Game.interpConst; i++) {
 		var interpState = {players:{}};
@@ -187,7 +201,7 @@ Game.interpolate = function() {
 		
 		Game.projectedStateBuffer.push(interpState);
 	}
-	Game.receivedStateBuffer.splice(Game.receivedStateBuffer.indexOf(oldState), 1);
+	Game.projectedStateBuffer.push(newState);
 }
 
 
@@ -197,11 +211,15 @@ Game.begin = function () {
 		if(Game.projectedStateBuffer.length > 0) {
 			Game.updateState(Game.projectedStateBuffer[0]);
 			Game.projectedStateBuffer.splice(0, 1);
+		} else {
+			console.log("empty buffer");
 		}
+		
 		Game.world.step(1/60);
 		Game.controls.update(Date.now() - time );
 		Game.renderer.render( Game.scene, Game.camera );
 		requestAnimationFrame( update );
+		Interface.stats.update();
 		time = Date.now();
 	}
 	update();

@@ -51,6 +51,96 @@
 		
 		
 	</body>
+	
+	
+	<script id="fragment_shader1" type="x-shader/x-fragment">
+	uniform float redWeight;
+	uniform float blueWeight;
+	uniform float greenWeight;
+	
+	uniform vec2 resolution;
+
+	varying vec2 vUv;
+
+	void main( void ) {
+
+		vec2 position = -1.0 + 2.0 * vUv;
+
+		float red = clamp(redWeight - 0.7 * abs(sin(position.x * position.y)), 0.0, 1.0);
+		float green = clamp(greenWeight - 0.7 * abs(sin( position.x * position.y)), 0.0, 1.0);
+		float blue = clamp(blueWeight - 0.7 * abs(sin( position.x * position.y)), 0.0, 1.0);
+		gl_FragColor = vec4( red, green, blue, 1.0 );
+
+	}
+
+	</script>
+	
+	<script id="fragment_shader2" type="x-shader/x-fragment">
+	uniform float redWeight;
+	uniform float blueWeight;
+	uniform float greenWeight;
+	
+	uniform vec2 resolution;
+
+	varying vec2 vUv;
+
+	void main( void ) {
+
+		vec2 position = vUv;
+		float red = redWeight;
+		float blue = blueWeight;
+		float green = greenWeight;
+		
+		if ( (position.x > 0.99 || position.x < 0.01) || (position.y < 0.01 ||  position.y > 0.99) ) {
+			red = 0.0;
+			blue = 0.0;
+			green = 0.0;
+		}
+		gl_FragColor = vec4( red, green, blue, 1.0 );
+	}
+
+	</script>
+	
+	<script id="ground_shader" type="x-shader/x-fragment">
+	uniform vec2 resolution;
+
+	varying vec2 vUv;
+
+	void main( void ) {
+		vec2 position = vUv;
+		
+		float red;
+		float blue;
+		float green;
+
+		if ( mod(position.x, 100.0) ==0.0 || mod(position.y, 100.0) == 0.0) {
+			red = 0.0;
+			blue = 0.0;
+			green = 0.0;
+		}
+		else {
+			red = 1.0;
+			blue = 1.0;
+			green = 1.0;
+		}
+		gl_FragColor = vec4( red, green, blue, 1.0 );
+	}
+
+	</script>
+	
+
+	<script id="vertexShader" type="x-shader/x-vertex">
+		varying vec2 vUv;
+
+		void main()
+		{
+			vUv = uv;
+			vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+			gl_Position = projectionMatrix * mvPosition;
+		}
+
+	</script>
+	
 	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>-->
 	<script src="js/three.min.js"></script>
 	<script src="js/cannon.js"></script>
@@ -62,6 +152,7 @@
 	<script src="js/Player.js"></script>
 	<script src="js/Utils.js"></script>
 	<script src="js/seedrandom.js"></script>
+	<script src="js/stats.min.js"></script>
 	
 	<script>
 		Network.setup();

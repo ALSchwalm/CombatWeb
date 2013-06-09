@@ -10,6 +10,7 @@ Utils = {};
 Utils.averageValue = function(oldValue, newValue, slices, index) {
 	var diff = newValue - oldValue;
 	var diff = diff / slices;
+	if (index >= slices) return newValue;
 	
 	return oldValue + diff * (index+1);
 }
