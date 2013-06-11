@@ -23,3 +23,13 @@ Utils.randomColor = function() {
     }
     return color;
 }
+
+
+// Rotate an object around an arbitrary axis in object space
+var rotObjectMatrix;
+Utils.rotateAroundObjectAxis = function(object, axis, radians) {
+    rotObjectMatrix = new THREE.Matrix4();
+    rotObjectMatrix.makeRotationAxis(axis.normalize(), radians);
+    object.matrix.multiply(rotObjectMatrix);      // post-multiply
+    object.rotation.setEulerFromRotationMatrix(object.matrix, 1);
+}

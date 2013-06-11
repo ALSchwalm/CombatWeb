@@ -79,7 +79,11 @@ Game.setupRender = function() {
 	var geometry = new THREE.PlaneGeometry( 300, 300, 50, 50 );
 	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 
-	var material = new THREE.MeshLambertMaterial( { color: 0xdddddd } );
+	var floorTexture = THREE.ImageUtils.loadTexture('./assets/floor3.jpg');
+	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+	floorTexture.repeat.set( 100, 100 );
+	
+	var material = new THREE.MeshLambertMaterial(  {map:  floorTexture});
 
 	var mesh = new THREE.Mesh( geometry, material );
 	mesh.castShadow = true;
@@ -94,10 +98,10 @@ Game.setupRender = function() {
 
 	document.body.appendChild( Game.renderer.domElement );
 }
-Game.objects = [];
+
 Game.seedWorld = function(seed) {
 	Math.seedrandom(seed);
-	
+
 	var worldObjects = Math.random() * 50 + 2;
 	
 	for(var i =0; i < worldObjects; i++) {
@@ -126,15 +130,16 @@ Game.seedWorld = function(seed) {
 								z : 200*Math.random() - 100}
 		
 		boxBody.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
-		var angle = Math.random();
-		boxBody.quaternion.setFromAxisAngle(new CANNON.Vec3(angle, 0, 1-angle),Math.random()*2*Math.PI);
 
+		boxBody.quaternion.setFromVectors(new CANNON.Vec3(Math.random(), Math.random(), Math.random()), 
+											new CANNON.Vec3(Math.random(), Math.random(), Math.random()));
+		
 		boxBody.position.copy(boxMesh.position);
 		boxBody.quaternion.copy(boxMesh.quaternion);
 		boxMesh.castShadow = true;
 		boxMesh.receiveShadow = true;
 		boxMesh.useQuaternion = true;
-		Game.objects.push(boxBody);
+
 		Game.scene.add(boxMesh);
 		Game.world.add(boxBody);
 	}
