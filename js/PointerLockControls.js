@@ -5,8 +5,9 @@
  var PointerLockControls = function ( camera, cannonBody ) {
 
     var eyeYPos = 2; // eyes are 2 meters above the ground
-    var velocityFactor = 0.2;
+    var velocityFactor = 0.4;
     var jumpVelocity = 20;
+	var friction = 0.2;
     var scope = this;
 
     var pitchObject = new THREE.Object3D();
@@ -140,31 +141,40 @@
     this.update = function ( delta ) {
 
         delta *= 0.5;
+		
 
         inputVelocity.set(0,0,0);
 
-        if ( moveForward ){
+        if ( moveForward && canJump){
             inputVelocity.z = -velocityFactor * delta;
         }
-        if ( moveBackward ){
+		
+        if ( moveBackward && canJump){
             inputVelocity.z = velocityFactor * delta;
         }
 
-        if ( moveLeft ){
+        if ( moveLeft && canJump){
             inputVelocity.x = -velocityFactor * delta;
         }
-        if ( moveRight ){
+		
+        if ( moveRight && canJump){
             inputVelocity.x = velocityFactor * delta;
         }
+		
+		if (canJump) {
+			velocity.x *= 0.9;
+			velocity.z *= 0.9;
+		}
 
         // Convert velocity to world coordinates
         quat.setFromEuler({x:pitchObject.rotation.x, y:yawObject.rotation.y, z:0},"XYZ");
         inputVelocity.applyQuaternion(quat);
-
-        // Add to the object
+	
+		// Add to the object
         velocity.x += inputVelocity.x;
         velocity.z += inputVelocity.z;
 
+		
         cannonBody.position.copy(yawObject.position);
     };
 };

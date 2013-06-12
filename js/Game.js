@@ -30,7 +30,7 @@ Game.setupPhysics = function(){
 	defaultMaterial = new CANNON.Material("defaultMaterial");
 	var physicsContactMaterial = new CANNON.ContactMaterial(defaultMaterial,
 															defaultMaterial,
-															0.4, // friction coefficient
+															4000000, // friction coefficient
 															0.3  // restitution
 															);
 	// We must add the contact materials to the world
@@ -79,7 +79,7 @@ Game.setupRender = function() {
 	var geometry = new THREE.PlaneGeometry( 300, 300, 50, 50 );
 	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 
-	var floorTexture = THREE.ImageUtils.loadTexture('./assets/floor3.jpg');
+	var floorTexture = THREE.ImageUtils.loadTexture('./assets/floor4.gif');
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
 	floorTexture.repeat.set( 100, 100 );
 	
@@ -136,6 +136,7 @@ Game.seedWorld = function(seed) {
 		
 		boxBody.position.copy(boxMesh.position);
 		boxBody.quaternion.copy(boxMesh.quaternion);
+
 		boxMesh.castShadow = true;
 		boxMesh.receiveShadow = true;
 		boxMesh.useQuaternion = true;
