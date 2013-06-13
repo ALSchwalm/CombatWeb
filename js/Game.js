@@ -83,7 +83,7 @@ Game.setupRender = function() {
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
 	floorTexture.repeat.set( 100, 100 );
 	
-	var material = new THREE.MeshLambertMaterial(  {map:  floorTexture});
+	var material = new THREE.MeshLambertMaterial(   { color: 0xdddddd } ); //{map:  floorTexture});
 
 	var mesh = new THREE.Mesh( geometry, material );
 	mesh.castShadow = true;
@@ -97,6 +97,21 @@ Game.setupRender = function() {
 	Game.renderer.setClearColor( Game.scene.fog.color, 1 );
 
 	document.body.appendChild( Game.renderer.domElement );
+	
+	// postprocessing
+	Game.composer = new THREE.EffectComposer( Game.renderer );
+	Game.composer.addPass( new THREE.RenderPass( Game.scene, Game.camera ) );
+	Game.shaders = {};
+	
+	var fxaaEffect = new THREE.ShaderPass( THREE.FXAAShader );
+	fxaaEffect.uniforms[ 'resolution' ].value.set( 1 / Interface.SCREEN_WIDTH, 1 / Interface.SCREEN_HEIGHT );
+
+	fxaaEffect.renderToScreen = true;
+	
+	Game.shaders["fxaaEffect"] = fxaaEffect;
+	Game.composer.addPass( fxaaEffect );
+	
+	
 }
 
 Game.seedWorld = function(seed) {
@@ -119,7 +134,7 @@ Game.seedWorld = function(seed) {
 							greenWeight:{ type: "f", value: Math.random() }
 						},
 			vertexShader: document.getElementById( 'vertexShader' ).textContent,
-			fragmentShader: document.getElementById( 'fragment_shader1' ).textContent
+			fragmentShader: document.getElementById( 'fragment_shader2' ).textContent
 			});
 		
 		var tempColor = Utils.randomColor();
@@ -221,12 +236,22 @@ Game.begin = function () {
 			console.log("empty buffer");
 		}
 		
+		//Update physics
 		Game.world.step(1/60);
+		
+		//Update controls
 		Game.controls.update(Date.now() - time );
+		
+		//Render scene
 		Game.renderer.render( Game.scene, Game.camera );
+		
+		//Apply postprocessing
+		Game.composer.render()
+		
 		requestAnimationFrame( update );
 		Interface.stats.update();
 		time = Date.now();
+		
 	}
 	update();
 	

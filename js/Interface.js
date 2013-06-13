@@ -2,6 +2,10 @@
 Interface = {};
 
 Interface.setup = function() {
+
+	Interface.SCREEN_WIDTH = window.innerWidth || 2;
+	Interface.SCREEN_HEIGHT = window.innerHeight || 2;
+
 	var havePointerLock = 'pointerLockElement' in document || 
 		'mozPointerLockElement' in document || 
 		'webkitPointerLockElement' in document;
@@ -81,9 +85,15 @@ Interface.setup = function() {
 }
 
 Interface.onWindowResize = function() {
-	Game.camera.aspect = window.innerWidth / window.innerHeight;
+	Interface.SCREEN_WIDTH = window.innerWidth || 2;
+	Interface.SCREEN_HEIGHT = window.innerHeight || 2;
+	
+	Game.shaders["fxaaEffect"].uniforms[ 'resolution' ].value.set( 1 / Interface.SCREEN_WIDTH, 1 / Interface.SCREEN_HEIGHT );
+	
+	Game.camera.aspect = Interface.SCREEN_WIDTH / Interface.SCREEN_HEIGHT;
 	Game.camera.updateProjectionMatrix();
 
-	Game.renderer.setSize( window.innerWidth, window.innerHeight );
+	Game.composer.setSize( Interface.SCREEN_WIDTH, Interface.SCREEN_HEIGHT );
+	Game.renderer.setSize( Interface.SCREEN_WIDTH, Interface.SCREEN_HEIGHT );
 
 }
