@@ -36,12 +36,25 @@ Interface.setup = function() {
 				var vector = new THREE.Vector3(0,0,1);
 				projector.unprojectVector(vector, Game.camera);
 				var raycaster = new THREE.Raycaster(Game.player.body.position, vector.sub(Game.player.body.position).normalize() );
+
 				//var intersects = raycaster.intersectObjects( Object.getMeshes(Game.objects) );
 				
 				Game.player.body.applyForce(new CANNON.Vec3(-raycaster.ray.direction.x*Game.knockback,
 															-raycaster.ray.direction.y*Game.knockback,
 															-raycaster.ray.direction.z*Game.knockback),
 											Game.player.body.position);
+											
+				var material = new THREE.LineBasicMaterial({
+					color: 0x0000ff,
+					opacity: 1
+				});
+
+				var geometry = new THREE.Geometry();
+				
+				geometry.vertices.push(Game.player.body.position);
+				geometry.vertices.push(raycaster.ray.origin.vadd(raycaster.ray.direction.multiplyScalar(40)));
+				var line = new THREE.Line(geometry, material);
+				Game.scene.add(line);
 				/*
 				if(intersects.length) {
 					var i = Object.getMeshes(Game.objects).indexOf(intersects[0].object);
@@ -53,6 +66,7 @@ Interface.setup = function() {
 				*/
 				canFire = false;
 				setTimeout( function(){canFire = true;}, 1000);
+				setInterval( function() {material.opacity *= 0.5;}, 100);
 			}
 		}
 		

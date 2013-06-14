@@ -63,13 +63,13 @@ Game.setupRender = function() {
 
 	light.castShadow = true;
 
-	light.shadowCameraNear = 20;
-	light.shadowCameraFar = 150;//camera.far;
-	light.shadowCameraFov = 150;
+	light.shadowCameraNear = 3;
+	light.shadowCameraFar = Game.camera.far;
+	light.shadowCameraFov = 50;
 
-	light.shadowMapDarkness = 0.8;
-	light.shadowMapWidth = 2*2048;
-	light.shadowMapHeight = 2*2048;
+	light.shadowMapDarkness = 1;
+	light.shadowMapWidth = 1024;
+	light.shadowMapHeight = 1024;
 	light.shadowCameraVisible = true;
 	
 	Game.scene.add( light );
@@ -82,7 +82,7 @@ Game.setupRender = function() {
 
 	var floorTexture = THREE.ImageUtils.loadTexture('./assets/floor4.gif');
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-	floorTexture.repeat.set( 7, 7 );
+	floorTexture.repeat.set( 8, 8 );
 	
 	var material = new THREE.MeshLambertMaterial(  {map:  floorTexture});
 	
@@ -113,7 +113,6 @@ Game.setupRender = function() {
 	Game.shaders["fxaaEffect"] = fxaaEffect;
 	Game.composer.addPass( fxaaEffect );
 	
-	
 }
 
 Game.seedWorld = function(seed) {
@@ -126,7 +125,7 @@ Game.seedWorld = function(seed) {
 		var boxShape = new CANNON.Box(halfExtents);
 		var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
 		var boxBody = new CANNON.RigidBody(0,boxShape);
-		boxBody.motionstate = 2;
+		boxBody.motionstate = 2; //make bodies motionless
 		
 		
 		var material = new THREE.ShaderMaterial( {
@@ -246,7 +245,7 @@ Game.begin = function () {
 		
 		//Render scene
 
-		//Game.renderer.render( Game.scene, Game.camera );
+		Game.renderer.render( Game.scene, Game.camera );
 		
 		//Apply postprocessing
 		Game.composer.render(0.1)
