@@ -113,15 +113,15 @@
 		float blue;
 		float green;
 
-		if ( mod(position.x, 100.0) ==0.0 || mod(position.y, 100.0) == 0.0) {
-			red = 0.0;
-			blue = 0.0;
-			green = 0.0;
+		if ( mod(position.x*100.0, 10.0) < 3.0 || mod(position.y*100.0, 10.0) < 3.0) {
+			red = sin(position.x);
+			blue = sin(position.x);
+			green = sin(position.x);
 		}
 		else {
-			red = 1.0;
-			blue = 1.0;
-			green = 1.0;
+			red = cos(position.y);
+			blue = cos(position.y);
+			green = cos(position.y);
 		}
 		gl_FragColor = vec4( red, green, blue, 1.0 );
 	}
@@ -160,11 +160,11 @@
 	<script src="js/Utils.js"></script>
 	<script src="js/seedrandom.js"></script>
 	<script src="js/stats.min.js"></script>
-	
-	<audio autoplay loop id=background_music>
-      <source src="assets/angrymob.mp3">
+
+	<audio autoplay loop id="background_music">
+		<source src="assets/angrymob.mp3">
 	</audio>
-	
+
 	<script>
 		Network.setup();
 		Interface.setup();

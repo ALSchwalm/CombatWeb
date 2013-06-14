@@ -60,7 +60,6 @@ Game.setupRender = function() {
 	light.target.position.set( 0, 0, 0 );
 
 	light.castShadow = true;
-	//light.onlyshadow = true;
 
 	light.shadowCameraNear = 20;
 	light.shadowCameraFar = 150;//camera.far;
@@ -81,10 +80,10 @@ Game.setupRender = function() {
 
 	var floorTexture = THREE.ImageUtils.loadTexture('./assets/floor4.gif');
 	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-	floorTexture.repeat.set( 100, 100 );
+	floorTexture.repeat.set( 7, 7 );
 	
-	var material = new THREE.MeshLambertMaterial(   { color: 0xdddddd } ); //{map:  floorTexture});
-
+	var material = new THREE.MeshLambertMaterial(  {map:  floorTexture});
+	
 	var mesh = new THREE.Mesh( geometry, material );
 	mesh.castShadow = true;
 	mesh.receiveShadow = true;
@@ -95,7 +94,8 @@ Game.setupRender = function() {
 	Game.renderer.shadowMapSoft = true;
 	Game.renderer.setSize( window.innerWidth, window.innerHeight );
 	Game.renderer.setClearColor( Game.scene.fog.color, 1 );
-
+	Game.renderer.autoClear = false;
+	
 	document.body.appendChild( Game.renderer.domElement );
 	
 	// postprocessing
@@ -135,7 +135,7 @@ Game.seedWorld = function(seed) {
 						},
 			vertexShader: document.getElementById( 'vertexShader' ).textContent,
 			fragmentShader: document.getElementById( 'fragment_shader2' ).textContent
-			});
+		});
 		
 		var tempColor = Utils.randomColor();
 		var boxMesh = new THREE.Mesh( boxGeometry, material);
@@ -243,10 +243,11 @@ Game.begin = function () {
 		Game.controls.update(Date.now() - time );
 		
 		//Render scene
-		Game.renderer.render( Game.scene, Game.camera );
+
+		//Game.renderer.render( Game.scene, Game.camera );
 		
 		//Apply postprocessing
-		Game.composer.render()
+		Game.composer.render(0.1)
 		
 		requestAnimationFrame( update );
 		Interface.stats.update();
