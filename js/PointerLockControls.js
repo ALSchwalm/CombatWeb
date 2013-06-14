@@ -8,6 +8,8 @@
     var velocityFactor = 0.4;
     var jumpVelocity = 20;
 	var friction = 0.2;
+	var airControlFactor = 0.3;
+	var maxVelocity = 30;
     var scope = this;
 
     var pitchObject = new THREE.Object3D();
@@ -142,23 +144,30 @@
 
         delta *= 0.5;
 		
-
         inputVelocity.set(0,0,0);
 
-        if ( moveForward && canJump){
-            inputVelocity.z = -velocityFactor * delta;
+        if ( moveForward){
+			inputVelocity.z = -velocityFactor * delta;
+			if (!canJump)
+				inputVelocity.z *= airControlFactor;
         }
 		
-        if ( moveBackward && canJump){
+        if ( moveBackward){
             inputVelocity.z = velocityFactor * delta;
+			if (!canJump)
+				inputVelocity.z *= airControlFactor;
         }
 
-        if ( moveLeft && canJump){
+        if ( moveLeft){
             inputVelocity.x = -velocityFactor * delta;
+			if (!canJump)
+				inputVelocity.x *= airControlFactor;
         }
 		
-        if ( moveRight && canJump){
+        if ( moveRight){
             inputVelocity.x = velocityFactor * delta;
+			if (!canJump)
+				inputVelocity.x *= airControlFactor;
         }
 		
 		if (canJump) {
@@ -169,11 +178,15 @@
         // Convert velocity to world coordinates
         quat.setFromEuler({x:pitchObject.rotation.x, y:yawObject.rotation.y, z:0},"XYZ");
         inputVelocity.applyQuaternion(quat);
-	
-		// Add to the object
-        velocity.x += inputVelocity.x;
-        velocity.z += inputVelocity.z;
-
+		
+		if ( Utils.vectMag( {x: velocity.x + inputVelocity.x, 
+							 y: velocity.y + inputVelocity.y, 
+							 z: velocity.z}) < maxVelocity) {
+							 
+			// Add to the object
+			velocity.x += inputVelocity.x;
+			velocity.z += inputVelocity.z;
+		}
 		
         cannonBody.position.copy(yawObject.position);
     };

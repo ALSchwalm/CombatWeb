@@ -34,10 +34,6 @@ Utils.rotateAroundObjectAxis = function(object, axis, radians) {
     object.rotation.setEulerFromRotationMatrix(object.matrix, 1);
 }
 
-Utils.withinLambda = function(val, target, lambda) {
-	if (Math.abs(Math.abs(target) - Math.abs(val)) < lambda) {
-		console.log("slowing");
-		return true;
-	}
-	return false;
+Utils.vectMag = function(v) {
+	return Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
