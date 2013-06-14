@@ -28,6 +28,34 @@ Interface.setup = function() {
 		document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
 		document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
 		window.addEventListener( 'resize', Interface.onWindowResize, false );
+		
+		var canFire = true;
+		var onMouseDown = function( event ) {
+			if (canFire) {
+				var projector = new THREE.Projector();
+				var vector = new THREE.Vector3(0,0,1);
+				projector.unprojectVector(vector, Game.camera);
+				var raycaster = new THREE.Raycaster(Game.player.body.position, vector.sub(Game.player.body.position).normalize() );
+				//var intersects = raycaster.intersectObjects( Object.getMeshes(Game.objects) );
+				
+				Game.player.body.applyForce(new CANNON.Vec3(-raycaster.ray.direction.x*Game.knockback,
+															-raycaster.ray.direction.y*Game.knockback,
+															-raycaster.ray.direction.z*Game.knockback),
+											Game.player.body.position);
+				/*
+				if(intersects.length) {
+					var i = Object.getMeshes(Game.objects).indexOf(intersects[0].object);
+					Game.objects[i].body.applyForce(new CANNON.Vec3(raycaster.ray.direction.x*10000,
+																	raycaster.ray.direction.y*10000,
+																	raycaster.ray.direction.z*10000), 
+													Game.objects[i].body.position);
+				}
+				*/
+				canFire = false;
+				setTimeout( function(){canFire = true;}, 1000);
+			}
+		}
+		
 		document.addEventListener( 'click', function(event) {
 			element.requestPointerLock = element.requestPointerLock || 
 									  element.mozRequestPointerLock || 
@@ -55,24 +83,8 @@ Interface.setup = function() {
 				element.requestPointerLock();
 			}
 
-			/*
-			var onMouseDown = function( event ) {
-				var projector = new THREE.Projector();
-				var vector = new THREE.Vector3(0,0,1);
-				projector.unprojectVector(vector, Game.camera);
-				var raycaster = new THREE.Raycaster(Game.player.body.position, vector.sub(Game.player.body.position).normalize() );
-				var intersects = raycaster.intersectObjects( Object.getMeshes(Game.objects) );
-
-				if(intersects.length) {
-					var i = Object.getMeshes(Game.objects).indexOf(intersects[0].object);
-					Game.objects[i].body.applyForce(new CANNON.Vec3(raycaster.ray.direction.x*10000,
-																	raycaster.ray.direction.y*10000,
-																	raycaster.ray.direction.z*10000), 
-													Game.objects[i].body.position);
-				}
-			}
 			onMouseDown();
-			*/
+			
 		});
 	}
 	var container = document.createElement( 'div' );

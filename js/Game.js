@@ -2,6 +2,8 @@
 Game = {};
 
 Game.FPS = 60;
+Game.knockback = 60000; //Move to controls?
+
 Game.player = null;
 Game.otherPlayers = {};
 
