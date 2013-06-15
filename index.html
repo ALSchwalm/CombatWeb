@@ -27,6 +27,7 @@
 				background:#FFF;
 				width: 4px;
 				height: 4px; 
+				visibility:hidden;
 			}
 			
 			#innercircle { 
@@ -40,40 +41,53 @@
 				background:#000;
 				width: 2px;
 				height: 2px; 
+				visibility:hidden;
 			}
+			
+			#time {
+
+				width: 100%;
+				height: 100%;
+				
+				display: -webkit-box;
+                display: -moz-box;
+                display: box;
+
+                -webkit-box-orient: horizontal;
+                -moz-box-orient: horizontal;
+                box-orient: horizontal;
+
+                -webkit-box-pack: center;
+                -moz-box-pack: center;
+                box-pack: center;
+
+                -webkit-box-align: center;
+                -moz-box-align: center;
+                box-align: center;
+
+                color: #ffffff;
+                text-align: center;
+
+				color: #ffffff;
+				background:#000;
+				text-align: center;
+			}
+			
 		</style>
 	</head>
 	<body>
+
+		<div id="time" style="font-size:60px">
+			3.0
+		</div>
+
 		<div id="outercircle">
 			<div id="innercircle">
 			</div>
 		</div>
 		
-		
 	</body>
-	
-	
-	<script id="fragment_shader1" type="x-shader/x-fragment">
-	uniform float redWeight;
-	uniform float blueWeight;
-	uniform float greenWeight;
-	
-	uniform vec2 resolution;
 
-	varying vec2 vUv;
-
-	void main( void ) {
-
-		vec2 position = -1.0 + 2.0 * vUv;
-
-		float red = clamp(redWeight - 0.7 * abs(sin(position.x * position.y)), 0.0, 1.0);
-		float green = clamp(greenWeight - 0.7 * abs(sin( position.x * position.y)), 0.0, 1.0);
-		float blue = clamp(blueWeight - 0.7 * abs(sin( position.x * position.y)), 0.0, 1.0);
-		gl_FragColor = vec4( red, green, blue, 1.0 );
-
-	}
-
-	</script>
 	
 	<script id="fragment_shader2" type="x-shader/x-fragment">
 	uniform float redWeight;
@@ -141,7 +155,7 @@
 
 	</script>
 	
-	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 	<script src="js/three.js"></script>
 	<script src="js/cannon.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
@@ -163,18 +177,49 @@
 	<script src="js/Player.js"></script>
 	<script src="js/Utils.js"></script>
 	
-<!--
+	
 	<audio autoplay loop id="background_music">
 		<source src="assets/angrymob.mp3">
 	</audio>
--->
+	
+	
 	<script>
-		Network.setup();
-		Interface.setup();
-		Game.setupPhysics();
-		Game.setupRender();
+		var startTime = 3.0
+		var count=0;
+		var volume = 0;
+		$("#background_music").get(0).volume = 0
+		var timer = setInterval( counter, 100);
+		var fade_music;
 		
-		Game.begin();
+		function counter() {
+			count++;
+			if (count >= 30) {
+				clearInterval(timer);
+				$('#innercircle').css('visibility', 'visible')
+				$('#outercircle').css('visibility', 'visible')
+				$('#time').remove();
+				fade_music= setInterval( fade, 100);
+				init();
+			}
+			$("#time").html( parseFloat(Math.round((startTime - count*0.1)*10 )/10).toFixed(1));
+		}
 		
+		
+		
+		function fade() {
+			volume += 0.01;
+			$("#background_music").get(0).volume = volume;
+			if (volume >= 1.0)
+				clearInterval(fade_music);
+		}
+		
+		function init() {
+			Network.setup();
+			Interface.setup();
+			Game.setupPhysics();
+			Game.setupRender();
+			
+			Game.begin();
+		}
 	</script>
 </html>
