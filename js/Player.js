@@ -12,7 +12,7 @@ function Player(_ID) {
 	this.mesh = new THREE.Mesh( this.geometry, new THREE.MeshLambertMaterial( { color: 0xdddddd } ) );
 	
 	this.mesh.castShadow = true;
-	this.mesh.receiveShadow = false;
+	this.mesh.receiveShadow = true;
 	this.mesh.useQuaternion = true;
 }
 

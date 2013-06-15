@@ -244,7 +244,6 @@ Game.begin = function () {
 		Game.controls.update(Date.now() - time );
 		
 		//Render scene
-
 		Game.renderer.render( Game.scene, Game.camera );
 		
 		//Apply postprocessing
