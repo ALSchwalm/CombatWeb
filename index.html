@@ -200,7 +200,7 @@
 				$('#innercircle').css('visibility', 'visible')
 				$('#outercircle').css('visibility', 'visible')
 				$('#splash').remove();
-				//fade_music= setInterval( fade, 100);
+				fade_music= setInterval( fade, 100);
 				Game.begin();
 			}
 			$("#time").html( parseFloat(Math.round((startTime - count*0.1)*10 )/10).toFixed(1));

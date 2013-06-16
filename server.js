@@ -9,6 +9,19 @@ var server = connect.createServer(
 
 var io = require('socket.io').listen(server);
 
+function createSeed()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+var seed = createSeed();
+
 
 io.configure('development', function(){
   io.set('transports', ['xhr-polling']);	//AppFog does not support websockets yet
@@ -42,14 +55,13 @@ io.sockets.on('connection', function (socket) {
 	currentState.players[socket.id] = {
 		position : {x: 0, y: 100, z: 0}
 	};
-	socket.emit("connected", {seed: "cats", state: currentState}); 	//send current seed to the player
+	socket.emit("connected", {seed: seed, state: currentState}); 	//send current seed to the player
 	socket.broadcast.emit("playerConnected", socket.id);			//notify other players of the connection
 });
 
 function updateState(socket, data) {
 	currentState.players[socket.id] = data;
 }
-
 
 setInterval( function() {
 	io.sockets.emit('currentState', currentState)
