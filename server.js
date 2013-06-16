@@ -27,11 +27,15 @@ io.sockets.on('connection', function (socket) {
 	});
 	
 	socket.on('playerSpawn', function(data) {
-		socket.broadcast.emit('playerSpawn', socket.id);		//notify other players of the spawn
+		socket.broadcast.emit('playerSpawn', socket.id);	//notify other players of the spawn
 	});
 	
 	socket.on('playerDied', function(data) {
 		socket.broadcast.emit('playerDied', data);			//notify other players of the death
+	});
+	
+	socket.on('createFire', function(data) {
+		socket.broadcast.emit('createFire', data);			//notify other players of the weapons fire
 	});
 	
 	

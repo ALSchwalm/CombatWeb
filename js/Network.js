@@ -50,6 +50,10 @@ Network.setup = function() {
 		}
 	});
 	
+	Network.socket.on('createFire', function(data) {
+		Interface.createFire(data.source, data.destination, false);
+	});
+	
 	
 	Network.socket.on('playerDisconnected', function(data) {
 		console.log("received disconnect");

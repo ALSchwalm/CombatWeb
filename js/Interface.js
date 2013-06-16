@@ -38,18 +38,10 @@ Interface.setup = function() {
 				var raycaster = new THREE.Raycaster(Game.player.body.position, vector.sub(Game.player.body.position).normalize() );
 
 				var intersects = raycaster.intersectObjects( Game.scene.children );
-				console.log(raycaster);/*
-				Game.player.body.applyForce(new CANNON.Vec3(-raycaster.ray.direction.x*Game.knockback,
-															-raycaster.ray.direction.y*Game.knockback,
-															-raycaster.ray.direction.z*Game.knockback),
-											Game.player.body.position);*/
-
-				var geometry = new THREE.Geometry();
-				
-				geometry.vertices.push(raycaster.ray.origin);
 				
 				if (intersects[0] && intersects[0].point) {
-					geometry.vertices.push(intersects[0].point);
+					Interface.createFire(raycaster.ray.origin, intersects[0].point, true);
+					
 					for (playerID in Game.otherPlayers) {
 						if (intersects[0].object == Game.otherPlayers[playerID].mesh) {
 							Network.socket.emit('playerDied', playerID);
@@ -59,14 +51,18 @@ Interface.setup = function() {
 					}
 				}
 				else {
-					geometry.vertices.push(raycaster.ray.origin.vadd(raycaster.ray.direction.multiplyScalar(40)));
+					Interface.createFire(raycaster.ray.origin, 
+											raycaster.ray.origin.vadd((new THREE.Vector3()).copy(raycaster.ray.direction).multiplyScalar(40)),
+											true);
 				}
-				var line = new THREE.Line(geometry,  new THREE.LineBasicMaterial( { color: 0xffffff} ) );
-				Game.scene.add(line);
+				
+				Game.player.body.applyForce(new CANNON.Vec3(-raycaster.ray.direction.x*Game.knockback,
+											-raycaster.ray.direction.y*Game.knockback,
+											-raycaster.ray.direction.z*Game.knockback),
+							Game.player.body.position);
 				
 				canFire = false;
 				setTimeout( function(){canFire = true;}, 1000);
-				//setTimeout( function(){ Game.scene.remove(line);}, 300);
 			}
 		}
 		
@@ -109,6 +105,19 @@ Interface.setup = function() {
 	Interface.stats.domElement.style.visibility = "hidden" //hide stats until the game starts
 	container.appendChild( Interface.stats.domElement );
 	
+}
+
+Interface.createFire = function(source, destination, local) {
+	var geometry = new THREE.Geometry();
+	geometry.vertices.push(source);
+	geometry.vertices.push(destination);
+	var line = new THREE.Line(geometry,  new THREE.LineBasicMaterial( { color: 0xffffff} ) );
+	Game.scene.add(line);
+	
+	if (local)
+		Network.socket.emit('createFire', {source:source, destination:destination});
+		
+	setTimeout( function(){ Game.scene.remove(line);}, 300);
 }
 
 Interface.onWindowResize = function() {
