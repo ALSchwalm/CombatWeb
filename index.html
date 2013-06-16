@@ -200,8 +200,8 @@
 				$('#innercircle').css('visibility', 'visible')
 				$('#outercircle').css('visibility', 'visible')
 				$('#splash').remove();
-				fade_music= setInterval( fade, 100);
-				init();
+				//fade_music= setInterval( fade, 100);
+				Game.begin();
 			}
 			$("#time").html( parseFloat(Math.round((startTime - count*0.1)*10 )/10).toFixed(1));
 		}
@@ -214,13 +214,10 @@
 				clearInterval(fade_music);
 		}
 		
-		function init() {
-			Network.setup();
-			Interface.setup();
-			Game.setupPhysics();
-			Game.setupRender();
-			
-			Game.begin();
-		}
+		Network.setup();
+		Interface.setup();
+		Game.setupPhysics();
+		Game.setupRender();
+
 	</script>
 </html>

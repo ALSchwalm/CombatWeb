@@ -31,44 +31,42 @@ Interface.setup = function() {
 		
 		var canFire = true;
 		var onMouseDown = function( event ) {
-			if (canFire) {
+			if (canFire && Game.player.live) {
 				var projector = new THREE.Projector();
 				var vector = new THREE.Vector3(0,0,1);
 				projector.unprojectVector(vector, Game.camera);
 				var raycaster = new THREE.Raycaster(Game.player.body.position, vector.sub(Game.player.body.position).normalize() );
 
 				var intersects = raycaster.intersectObjects( Game.scene.children );
-				console.log(intersects);
+				console.log(raycaster);/*
 				Game.player.body.applyForce(new CANNON.Vec3(-raycaster.ray.direction.x*Game.knockback,
 															-raycaster.ray.direction.y*Game.knockback,
 															-raycaster.ray.direction.z*Game.knockback),
-											Game.player.body.position);
+											Game.player.body.position);*/
 
 				var geometry = new THREE.Geometry();
 				
-				geometry.vertices.push(Game.player.body.position);
+				geometry.vertices.push(raycaster.ray.origin);
 				
 				if (intersects[0] && intersects[0].point) {
 					geometry.vertices.push(intersects[0].point);
+					for (playerID in Game.otherPlayers) {
+						if (intersects[0].object == Game.otherPlayers[playerID].mesh) {
+							Network.socket.emit('playerDied', playerID);
+							Game.otherPlayers[playerID].live = false;
+							Game.scene.remove(Game.otherPlayers[playerID].mesh);
+						}
+					}
 				}
 				else {
-					geometry.vertices.push(raycaster.ray.origin.vadd(raycaster.ray.direction.multiplyScalar(200)));
+					geometry.vertices.push(raycaster.ray.origin.vadd(raycaster.ray.direction.multiplyScalar(40)));
 				}
 				var line = new THREE.Line(geometry,  new THREE.LineBasicMaterial( { color: 0xffffff} ) );
 				Game.scene.add(line);
 				
-				/*
-				if(intersects.length) {
-					var i = Object.getMeshes(Game.objects).indexOf(intersects[0].object);
-					Game.objects[i].body.applyForce(new CANNON.Vec3(raycaster.ray.direction.x*10000,
-																	raycaster.ray.direction.y*10000,
-																	raycaster.ray.direction.z*10000), 
-													Game.objects[i].body.position);
-				}
-				*/
 				canFire = false;
 				setTimeout( function(){canFire = true;}, 1000);
-				setTimeout( function(){ Game.scene.remove(line);}, 300);
+				//setTimeout( function(){ Game.scene.remove(line);}, 300);
 			}
 		}
 		
@@ -108,6 +106,7 @@ Interface.setup = function() {
 	Interface.stats = new Stats();
 	Interface.stats.domElement.style.position = 'absolute';
 	Interface.stats.domElement.style.top = '0px';
+	Interface.stats.domElement.style.visibility = "hidden" //hide stats until the game starts
 	container.appendChild( Interface.stats.domElement );
 	
 }

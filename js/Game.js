@@ -3,6 +3,7 @@ Game = {};
 
 Game.FPS = 60;
 Game.knockback = 60000; //Move to controls?
+Game.spawn = {x:0, y:100, z:0};
 
 Game.player = null;
 Game.otherPlayers = {};
@@ -32,7 +33,7 @@ Game.setupPhysics = function(){
 	defaultMaterial = new CANNON.Material("defaultMaterial");
 	var physicsContactMaterial = new CANNON.ContactMaterial(defaultMaterial,
 															defaultMaterial,
-															4000000, // friction coefficient
+															400, // friction coefficient
 															0.3  // restitution
 															);
 	// We must add the contact materials to the world
@@ -49,7 +50,7 @@ Game.setupPhysics = function(){
 
 
 Game.setupRender = function() {
-	Game.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	Game.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 1000 );
 
 	Game.scene = new THREE.Scene();
 	Game.scene.fog = new THREE.Fog( 0x000000, 0, 500 );
@@ -194,7 +195,7 @@ Game.interpolate = function(newState) {
 	var oldState = Game.currentState;
 
 	
-	Game.interpConst = (Network.latency+50)/(1000/Game.FPS); //(oldState.time - newState.time)/(1000/60); //; //80 is the time between server updates
+	Game.interpConst = (Network.latency+50)/(1000/Game.FPS);
 	
 	for(var i=0; i < Game.interpConst; i++) {
 		var interpState = {players:{}};
@@ -228,6 +229,10 @@ Game.interpolate = function(newState) {
 
 
 Game.begin = function () {
+	
+	Network.socket.emit("playerSpawn", Game.player.ID);
+	Interface.stats.domElement.style.visibility = "visible";
+	
 	var time = Date.now();
 	function update() {
 		if(Game.projectedStateBuffer.length > 0) {
@@ -237,17 +242,18 @@ Game.begin = function () {
 			console.log("empty buffer");
 		}
 		
-		//Update physics
-		Game.world.step(1/60);
+		if (Game.player.live) {
+			//Update physics
+			Game.world.step(1/60);
 		
-		//Update controls
-		Game.controls.update(Date.now() - time );
-		
+			//Update controls
+			Game.controls.update(Date.now() - time );
+		}
 		//Render scene
 		Game.renderer.render( Game.scene, Game.camera );
 		
 		//Apply postprocessing
-		Game.composer.render(0.1)
+		Game.composer.render(0.05)
 		
 		requestAnimationFrame( update );
 		Interface.stats.update();
