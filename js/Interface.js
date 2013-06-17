@@ -45,8 +45,7 @@ Interface.setup = function() {
 					for (playerID in Game.otherPlayers) {
 						if (intersects[0].object == Game.otherPlayers[playerID].mesh) {
 							Network.socket.emit('playerDied', playerID);
-							Game.otherPlayers[playerID].live = false;
-							Game.scene.remove(Game.otherPlayers[playerID].mesh);
+							Game.otherPlayers[playerID].despawn();
 						}
 					}
 				}
@@ -122,7 +121,7 @@ Interface.createFire = function(source, destination, local) {
 		
 		cloud.vertices.push(vertex);
 	}
-	var cloudMaterial = new THREE.ParticleBasicMaterial( { 
+	var cloudMaterial = new THREE.ParticleBasicMaterial( {
 		size: 0.01,
 		color: 0x00A0A0,
 		transparent: true,
@@ -148,7 +147,6 @@ Interface.createFire = function(source, destination, local) {
 		clearInterval(fade);
 		Game.scene.remove(particles);
 	}, 700);
-	
 }
 
 Interface.onWindowResize = function() {

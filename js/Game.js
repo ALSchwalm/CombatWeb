@@ -170,8 +170,7 @@ Game.updateState = function(newState) {
 			if (Game.otherPlayers[playerID])
 				Game.otherPlayers[playerID].setState(newState.players[playerID]);
 			else {
-				Game.otherPlayers[playerID] = new Player(playerID);
-				Game.scene.add(Game.otherPlayers[playerID].mesh);
+				Game.otherPlayers[playerID] = new Player(playerID); //player appears unexpectedly
 			}
 		}
 	}

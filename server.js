@@ -55,7 +55,7 @@ io.sockets.on('connection', function (socket) {
 	currentState.players[socket.id] = {
 		position : {x: 0, y: 100, z: 0}
 	};
-	socket.emit("connected", {seed: seed, state: currentState}); 	//send current seed to the player
+	socket.emit("connected", {seed: seed}); 	//send current seed to the player
 	socket.broadcast.emit("playerConnected", socket.id);			//notify other players of the connection
 });
 

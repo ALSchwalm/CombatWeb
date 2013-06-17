@@ -30,15 +30,16 @@ Network.setup = function() {
 	Network.socket.on('playerSpawn', function(data) {
 	console.log(data, "spawned");
 		if (Game.otherPlayers[data])
-			Game.scene.add(Game.otherPlayers[data].mesh);
+			Game.otherPlayers[data].spawn();
 	});
 	
 	Network.socket.on('playerDied', function(data) {
 		console.log(data, "died");
 		if (Game.otherPlayers[data])
-			Game.scene.remove(Game.otherPlayers[data].mesh);
+			Game.otherPlayers[data].despawn();
 		else if (data == Game.player.ID) {
 			Game.player.live = false;
+			Game.player.body.velocity = new CANNON.Vec3();
 			
 			setTimeout( function() {
 				Game.player.live = true;
@@ -62,7 +63,6 @@ Network.setup = function() {
 			delete Game.otherPlayers[data];
 		}
 	});
-	
 }
 
 Network.findLatency = function() {
