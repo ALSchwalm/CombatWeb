@@ -52,7 +52,7 @@ Interface.setup = function() {
 				}
 				else {
 					Interface.createFire(raycaster.ray.origin, 
-											raycaster.ray.origin.vadd((new THREE.Vector3()).copy(raycaster.ray.direction).multiplyScalar(40)),
+											raycaster.ray.origin.vadd((new THREE.Vector3()).copy(raycaster.ray.direction).multiplyScalar(100)),
 											true);
 				}
 				
@@ -109,25 +109,16 @@ Interface.setup = function() {
 
 Interface.createFire = function(source, destination, local) {
 	var direction = new THREE.Vector3()
-	
 	direction.copy(destination).sub(source);
 	
-	var core = new THREE.Geometry();
 	var cloud = new THREE.Geometry();
-	
-	core.vertices.push(source);
-	core.vertices.push(destination);
-	
-	var line = new THREE.Line(core,  new THREE.LineBasicMaterial( { 
-		color: 0xffffff,
-	}));
 	
 	for(var i =0; i < 1000; i++ ) {
 		var vertex = new THREE.Vector3();
 		vertex.copy(source).add((new THREE.Vector3()).copy(direction).multiplyScalar(Math.random()));
-		vertex.x += Math.random()*0.05;
-		vertex.y += Math.random()*0.05;
-		vertex.z += Math.random()*0.05;
+		vertex.x += Math.random()*0.05 - 0.025;
+		vertex.y += Math.random()*0.05 - 0.025;
+		vertex.z += Math.random()*0.05 - 0.025;
 		
 		cloud.vertices.push(vertex);
 	}
@@ -139,8 +130,7 @@ Interface.createFire = function(source, destination, local) {
 	});
 	
 	var particles = new THREE.ParticleSystem( cloud, cloudMaterial );
-	
-	//Game.scene.add(line);
+
 	Game.scene.add(particles);
 	
 	if (local)
@@ -156,11 +146,8 @@ Interface.createFire = function(source, destination, local) {
 	
 	setTimeout( function(){
 		clearInterval(fade);
-		//Game.scene.remove(line);
 		Game.scene.remove(particles);
 	}, 700);
-	
-	
 	
 }
 
