@@ -231,6 +231,7 @@ Game.interpolate = function(newState) {
 Game.begin = function () {
 	
 	Network.socket.emit("playerSpawn", Game.player.ID);
+	Game.player.live = true;
 	Interface.stats.domElement.style.visibility = "visible";
 	
 	var time = Date.now();

@@ -108,16 +108,60 @@ Interface.setup = function() {
 }
 
 Interface.createFire = function(source, destination, local) {
-	var geometry = new THREE.Geometry();
-	geometry.vertices.push(source);
-	geometry.vertices.push(destination);
-	var line = new THREE.Line(geometry,  new THREE.LineBasicMaterial( { color: 0xffffff} ) );
-	Game.scene.add(line);
+	var direction = new THREE.Vector3()
+	
+	direction.copy(destination).sub(source);
+	
+	var core = new THREE.Geometry();
+	var cloud = new THREE.Geometry();
+	
+	core.vertices.push(source);
+	core.vertices.push(destination);
+	
+	var line = new THREE.Line(core,  new THREE.LineBasicMaterial( { 
+		color: 0xffffff,
+	}));
+	
+	for(var i =0; i < 1000; i++ ) {
+		var vertex = new THREE.Vector3();
+		vertex.copy(source).add((new THREE.Vector3()).copy(direction).multiplyScalar(Math.random()));
+		vertex.x += Math.random()*0.05;
+		vertex.y += Math.random()*0.05;
+		vertex.z += Math.random()*0.05;
+		
+		cloud.vertices.push(vertex);
+	}
+	var cloudMaterial = new THREE.ParticleBasicMaterial( { 
+		size: 0.01,
+		color: 0x00A0A0,
+		transparent: true,
+		opacity: 0.8,
+	});
+	
+	var particles = new THREE.ParticleSystem( cloud, cloudMaterial );
+	
+	//Game.scene.add(line);
+	Game.scene.add(particles);
 	
 	if (local)
 		Network.socket.emit('createFire', {source:source, destination:destination});
-		
-	setTimeout( function(){ Game.scene.remove(line);}, 300);
+	
+	var fade = setInterval( function() {
+		THREE.ColorConverter.setHSV( particles.material.color, 
+			THREE.ColorConverter.getHSV(particles.material.color).h,
+			THREE.ColorConverter.getHSV(particles.material.color).s,
+			THREE.ColorConverter.getHSV(particles.material.color).v - 0.005);
+		particles.material.opacity -= 0.02
+	}, 10);
+	
+	setTimeout( function(){
+		clearInterval(fade);
+		//Game.scene.remove(line);
+		Game.scene.remove(particles);
+	}, 700);
+	
+	
+	
 }
 
 Interface.onWindowResize = function() {

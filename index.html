@@ -78,7 +78,7 @@
 	<body>
 		
 		<div id="splash" style="font-size:60px">
-			Get Ready: 
+			Get Ready:
 			<div id="time" >
 			</div>
 		</div>
@@ -116,34 +116,6 @@
 	}
 
 	</script>
-	
-	<script id="ground_shader" type="x-shader/x-fragment">
-	uniform vec2 resolution;
-
-	varying vec2 vUv;
-
-	void main( void ) {
-		vec2 position = vUv;
-		
-		float red;
-		float blue;
-		float green;
-
-		if ( mod(position.x*100.0, 10.0) < 3.0 || mod(position.y*100.0, 10.0) < 3.0) {
-			red = sin(position.x);
-			blue = sin(position.x);
-			green = sin(position.x);
-		}
-		else {
-			red = cos(position.y);
-			blue = cos(position.y);
-			green = cos(position.y);
-		}
-		gl_FragColor = vec4( red, green, blue, 1.0 );
-	}
-
-	</script>
-	
 
 	<script id="vertexShader" type="x-shader/x-vertex">
 		varying vec2 vUv;
