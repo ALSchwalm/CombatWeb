@@ -24,7 +24,6 @@ var seed = createSeed();
 
 
 io.configure('development', function(){
-  io.set('transports', ['xhr-polling']);	//AppFog does not support websockets yet
   io.set('close timeout', 2);				//decrease disconnect timeout from 60s to 2s
 });
 
