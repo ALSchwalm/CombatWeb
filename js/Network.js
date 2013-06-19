@@ -39,7 +39,6 @@ Network.setup = function() {
 			Game.otherPlayers[data].despawn();
 		else if (data == Game.player.ID) {
 			Game.player.live = false;
-			Game.player.body.velocity = new CANNON.Vec3();
 			
 			setTimeout( function() {
 				Game.player.live = true;

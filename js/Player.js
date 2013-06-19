@@ -20,21 +20,22 @@ function Player(_ID) {
 Player.prototype.setState = function(state) {
 	this.body.position = new CANNON.Vec3(state.position.x, state.position.y, state.position.z);
 	this.mesh.position = state.position;
+	this.live = state.live;
 }
 
 Player.prototype.getState = function() {
 	var state = {};
 	state.position = this.body.position;
-	
+	state.live = this.live;
 	return state;
 }
 
 Player.prototype.spawn = function() {
-	this.live = true;
 	Game.scene.add(this.mesh);
+	this.live = true;
 }
 
 Player.prototype.despawn = function() {
-	this.live = false;
 	Game.scene.remove(this.mesh);
+	this.live = false;
 }

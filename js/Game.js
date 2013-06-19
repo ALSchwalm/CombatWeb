@@ -171,6 +171,8 @@ Game.updateState = function(newState) {
 				Game.otherPlayers[playerID].setState(newState.players[playerID]);
 			else {
 				Game.otherPlayers[playerID] = new Player(playerID); //player appears unexpectedly
+				Game.otherPlayers[playerID].setState(newState.players[playerID]);
+				Game.otherPlayers[playerID].spawn();
 			}
 		}
 	}
