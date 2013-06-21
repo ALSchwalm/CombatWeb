@@ -94,11 +94,41 @@
 					-1px 1px 0 #000,
 					1px 1px 0 #000;
 				left: 2%;
+				bottom: 12px;
+			}
+			
+			#chat_input {
+				position: absolute;
 				bottom: 0;
+				background-color: rgba(0,0,0,0.8);
+				border: 1px solid rgba(255, 255, 255, .2);
+				width: 100%;
+				color: white; 
+				-webkit-font-smoothing: antialiased;
 			}
 			
 			.player_name {
 				color: green;
+				font-weight:bold;
+				text-shadow:
+					-1px -1px 0 #000,  
+					1px -1px 0 #000,
+					-1px 1px 0 #000,
+					1px 1px 0 #000;
+			}
+			
+			.other_player_name {
+				color: CornflowerBlue ;
+				font-weight:bold;
+				text-shadow:
+					-1px -1px 0 #000,  
+					1px -1px 0 #000,
+					-1px 1px 0 #000,
+					1px 1px 0 #000;
+			}
+			
+			.server_message {
+				color: Tomato  ;
 				font-weight:bold;
 				text-shadow:
 					-1px -1px 0 #000,  
@@ -125,7 +155,14 @@
 		
 		<div id="chat_box">
 			<div id="chat_text">
+				<p>
+				<span class="player_name">Player 1: </span>Very long test line Very long test line Very long test line Very long test line Very long test line Very long test line<br>
+				<span class="other_player_name">Player 2: </span> test2<br>
+				<span class="server_message"><span class="player_name">Player 1 </span>joined the game.</span><br>
+				<span class="server_message"><span class="player_name">Player 1 </span>fragged <span class="other_player_name">Player 2</span>.</span>
+				</p>
 			</div>
+			<input type="text" id="chat_input"><br>
 		</div>
 
 	</body>

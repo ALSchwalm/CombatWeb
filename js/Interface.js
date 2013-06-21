@@ -44,7 +44,7 @@ Interface.setup = function() {
 					
 					for (playerID in Game.otherPlayers) {
 						if (intersects[0].object == Game.otherPlayers[playerID].mesh) {
-							Network.socket.emit('playerDied', playerID);
+							Network.socket.emit('playerDied', {source:Game.player.ID, destination:playerID});
 							Game.otherPlayers[playerID].despawn();
 						}
 					}

@@ -39,8 +39,8 @@ io.sockets.on('connection', function (socket) {
 		updateState(socket, data);
 	});
 	
-	socket.on('playerSpawn', function(data) {
-		socket.broadcast.emit('playerSpawn', socket.id);	//notify other players of the spawn
+	socket.on('playerSpawn', function() {
+		socket.broadcast.emit('playerSpawn', socket.id);	//notify other players of this players spawn
 	});
 	
 	socket.on('playerDied', function(data) {
@@ -51,12 +51,15 @@ io.sockets.on('connection', function (socket) {
 		socket.broadcast.emit('createFire', data);			//notify other players of the weapons fire
 	});
 	
+	var playername = "Player"+Object.keys(currentState.players).length
 	
 	currentState.players[socket.id] = {
-		position : {x: 0, y: 100, z: 0}
+		position : {x: 0, y: 100, z: 0},
+		name: playername
 	};
-	socket.emit("connected", {seed: seed}); 	//send current seed to the player
-	socket.broadcast.emit("playerConnected", socket.id);			//notify other players of the connection
+	
+	socket.emit("connected", {seed: seed, name:playername, state:currentState}); 	//send current seed to the player
+	socket.broadcast.emit("playerConnected", {id:socket.id, name:playername});			//notify other players of the connection
 });
 
 function updateState(socket, data) {

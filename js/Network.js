@@ -16,28 +16,30 @@ Network.setup = function() {
 	*/
 	Network.socket.on('connected', function (data) {
 		Game.player.ID = Network.socket.socket.sessionid;
+		Game.player.name = data.name;
 		Network.ID = Network.socket.socket.sessionid;
 		Game.seed = data.seed;
-		Game.receivedStateBuffer.push(data.state);
+		Game.interpolate(data.state);
+		console.log(data.state);
 		Game.seedWorld(Game.seed);
 	});
 	
 	Network.socket.on('playerConnected', function(data) {
-		console.log(data, "connected");
-		Game.otherPlayers[data] = new Player(data);
+		console.log(data.name, "connected");
+		Game.otherPlayers[data.id] = new Player(data.id, data.name);
 	});
 	
 	Network.socket.on('playerSpawn', function(data) {
-	console.log(data, "spawned");
+	console.log(Game.otherPlayers[data].name, "spawned");
 		if (Game.otherPlayers[data])
 			Game.otherPlayers[data].spawn();
 	});
 	
 	Network.socket.on('playerDied', function(data) {
-		console.log(data, "died");
-		if (Game.otherPlayers[data])
-			Game.otherPlayers[data].despawn();
-		else if (data == Game.player.ID) {
+		//console.log(Game.otherPlayers[data].name || Game.player.name, "died");
+		if (Game.otherPlayers[data.destination])
+			Game.otherPlayers[data.destination].despawn();
+		else if (data.destination == Game.player.ID) {
 			Game.player.live = false;
 			
 			setTimeout( function() {
@@ -45,7 +47,7 @@ Network.setup = function() {
 				Game.player.body.position.set(Game.spawn.x, 
 												Game.spawn.y, 
 												Game.spawn.z)
-				Network.socket.emit('playerSpawn', Game.player.ID);
+				Network.socket.emit('playerSpawn');
 			}, 3000);
 		}
 	});
