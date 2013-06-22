@@ -63,9 +63,9 @@
     };
 
     var onKeyDown = function ( event ) {
+		if (!scope.enabled) return
 
         switch ( event.keyCode ) {
-
             case 38: // up
             case 87: // w
                 moveForward = true;
@@ -91,12 +91,17 @@
                 }
                 canJump = false;
                 break;
+				
+			case 84:
+				$('#chat_input').focus();
+				event.preventDefault();
+				break;
         }
 
     };
 
     var onKeyUp = function ( event ) {
-
+		if (!scope.enabled) return
         switch( event.keyCode ) {
 
             case 38: // up
@@ -141,7 +146,6 @@
     // Moves the camera to the Cannon.js object position and adds velocity to the object if the run key is down
     var inputVelocity = new THREE.Vector3();
     this.update = function ( delta ) {
-
         delta *= 0.5;
 		
         inputVelocity.set(0,0,0);

@@ -242,9 +242,15 @@
 		var timer = setInterval( counter, 100);
 		var fade_music;
 		
+		$('#chat_input').focus( function() {
+			Game.controls.enabled = false;
+		});
+		
 		$('#chat_input').keypress( function(e) {
 			if (e.which == 13) {	//submit text on enter
 				$('#chat_input').submit();
+				$('#chat_input').blur()
+				Game.controls.enabled = true;
 			}
 		});
 		

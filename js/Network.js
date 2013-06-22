@@ -19,7 +19,7 @@ Network.setup = function() {
 		Game.player.name = data.name;
 		Network.ID = Network.socket.socket.sessionid;
 		Game.seed = data.seed;
-		Game.interpolate(data.state);
+		Game.updateState(data.state);
 		console.log(data.state);
 		Game.seedWorld(Game.seed);
 	});

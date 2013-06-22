@@ -1,7 +1,7 @@
 
 function Player(_ID, name) {
 	this.ID = _ID;
-	this.name = name || ""
+	this.name = name;
 	
 	// Create a sphere
 	var mass = 50, radius = 1.3;
