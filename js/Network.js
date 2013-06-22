@@ -54,12 +54,15 @@ Network.setup = function() {
 				}
 			}
 			
-			
 			data.source = "";
 			data.message = '<span class="server_message">' + data.message + '</span>';
 		}
 		
 		$('#chat_text_paragraph').append('<span class="message">' + data.source + data.message + '<br></span>');
+		
+		if ($('.message').length > 10) { //only allow ten messages at a time
+			$('.message:first').remove();
+		}
 	
 	});
 	
