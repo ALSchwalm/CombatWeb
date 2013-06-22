@@ -51,6 +51,10 @@ io.sockets.on('connection', function (socket) {
 		socket.broadcast.emit('createFire', data);			//notify other players of the weapons fire
 	});
 	
+	socket.on('message', function(data) {
+		io.sockets.emit('message', data);
+	});
+	
 	var playername = "Player"+Object.keys(currentState.players).length
 	
 	currentState.players[socket.id] = {

@@ -155,14 +155,14 @@
 		
 		<div id="chat_box">
 			<div id="chat_text">
-				<p>
+				<p id='chat_text_paragraph'>
 				<span class="player_name">Player 1: </span>Very long test line Very long test line Very long test line Very long test line Very long test line Very long test line<br>
 				<span class="other_player_name">Player 2: </span> test2<br>
 				<span class="server_message"><span class="player_name">Player 1 </span>joined the game.</span><br>
-				<span class="server_message"><span class="player_name">Player 1 </span>fragged <span class="other_player_name">Player 2</span>.</span>
+				<span class="server_message"><span class="player_name">Player 1 </span>fragged <span class="other_player_name">Player 2</span>.</span><br>
 				</p>
 			</div>
-			<input type="text" id="chat_input"><br>
+			<input type="text" id="chat_input" type="submit" ><br>
 		</div>
 
 	</body>
@@ -242,6 +242,18 @@
 		var timer = setInterval( counter, 100);
 		var fade_music;
 		
+		$('#chat_input').keypress( function(e) {
+			if (e.which == 13) {	//submit text on enter
+				$('#chat_input').submit();
+			}
+		});
+		
+		$('#chat_input').submit( function(){
+			Network.socket.emit('message', {source:Network.ID, message:$('#chat_input').val()});
+			$('#chat_input').val(''); //clear text box
+		});
+		
+		
 		function counter() {
 			count++;
 			if (count >= 30) {
@@ -249,7 +261,7 @@
 				$('#innercircle').css('visibility', 'visible')
 				$('#outercircle').css('visibility', 'visible')
 				$('#splash').remove();
-				fade_music= setInterval( fade, 100);
+				//fade_music= setInterval( fade, 100);
 				Game.begin();
 			}
 			$("#time").html( parseFloat(Math.round((startTime - count*0.1)*10 )/10).toFixed(1));

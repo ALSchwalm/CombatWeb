@@ -21,13 +21,11 @@ function Player(_ID, name) {
 Player.prototype.setState = function(state) {
 	this.body.position = new CANNON.Vec3(state.position.x, state.position.y, state.position.z);
 	this.mesh.position = state.position;
-	if (state.name) this.name = state.name;
 	this.live = state.live;
 }
 
 Player.prototype.getState = function() {
 	var state = {};
-	state.name = this.name
 	state.position = this.body.position;
 	state.live = this.live;
 	return state;

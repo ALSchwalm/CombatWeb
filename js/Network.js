@@ -24,6 +24,20 @@ Network.setup = function() {
 		Game.seedWorld(Game.seed);
 	});
 	
+	Network.socket.on('message', function(data) {
+		if (data.source == Game.player.ID) {
+			data.source = '<span class="player_name">' + Game.player.name + ': </span>';
+		} else if (data.source != 'system') {
+			data.source = 
+				'<span class="other_player_name">' + 
+					Game.otherPlayers[data.source].name + 
+				': </span>';
+		}
+		
+		$('#chat_text_paragraph').append(data.source + data.message + '<br>');
+	
+	});
+	
 	Network.socket.on('playerConnected', function(data) {
 		console.log(data.name, "connected");
 		Game.otherPlayers[data.id] = new Player(data.id, data.name);
