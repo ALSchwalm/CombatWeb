@@ -27,14 +27,39 @@ Network.setup = function() {
 	Network.socket.on('message', function(data) {
 		if (data.source == Game.player.ID) {
 			data.source = '<span class="player_name">' + Game.player.name + ': </span>';
-		} else if (data.source != 'system') {
+		} else if (Game.otherPlayers[data.source]) {
 			data.source = 
 				'<span class="other_player_name">' + 
 					Game.otherPlayers[data.source].name + 
 				': </span>';
+		} else if (data.source == 'server') {
+			if (data.left && (Game.otherPlayers[data.left] || Game.player.ID == data.left)) {
+				if (data.left == Game.player.ID) {
+					data.message = '<span class="player_name">' + Game.player.name + '</span>' + data.message;
+				} else {
+					data.message = 				
+						'<span class="other_player_name">' + 
+							Game.otherPlayers[data.left].name + 
+						'</span>' + data.message;
+				}
+			}
+			if (data.right && (Game.otherPlayers[data.right] || Game.player.ID == data.right)) {
+				if (data.right == Game.player.ID) {
+					data.message += '<span class="player_name">' + Game.player.name + '</span>';
+				} else {
+					data.message +=				
+						'<span class="other_player_name">' + 
+							Game.otherPlayers[data.right].name + 
+						'</span>';
+				}
+			}
+			
+			
+			data.source = "";
+			data.message = '<span class="server_message">' + data.message + '</span>';
 		}
 		
-		$('#chat_text_paragraph').append(data.source + data.message + '<br>');
+		$('#chat_text_paragraph').append('<span class="message">' + data.source + data.message + '<br></span>');
 	
 	});
 	

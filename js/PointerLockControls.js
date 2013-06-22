@@ -92,9 +92,9 @@
                 canJump = false;
                 break;
 				
-			case 84:
+			case 84: // t
 				$('#chat_input').focus();
-				event.preventDefault();
+				event.preventDefault(); //Stop the 't' press from being set to the textbox
 				break;
         }
 

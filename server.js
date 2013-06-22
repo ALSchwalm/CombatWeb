@@ -45,6 +45,7 @@ io.sockets.on('connection', function (socket) {
 	
 	socket.on('playerDied', function(data) {
 		socket.broadcast.emit('playerDied', data);			//notify other players of the death
+		io.sockets.emit('message', {source:'server', message:" fragged ", left:data.source, right:data.destination});
 	});
 	
 	socket.on('createFire', function(data) {
