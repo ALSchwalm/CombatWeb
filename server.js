@@ -62,9 +62,10 @@ io.sockets.on('connection', function (socket) {
 		position : {x: 0, y: 100, z: 0},
 		name: playername
 	};
-	
-	socket.emit("connected", {seed: seed, name:playername, state:currentState}); 	//send current seed to the player
 	socket.broadcast.emit("playerConnected", {id:socket.id, name:playername});			//notify other players of the connection
+		
+	socket.emit("connected", {seed: seed, name:playername, state:currentState}); 	//send current seed to the player
+	io.sockets.emit('message', {source:'server', message:" joined the game", left:socket.id});
 });
 
 function updateState(socket, data) {
@@ -73,4 +74,4 @@ function updateState(socket, data) {
 
 setInterval( function() {
 	io.sockets.emit('currentState', currentState)
-}, 50);
+}, 80);

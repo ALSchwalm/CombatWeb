@@ -28,6 +28,7 @@ Player.prototype.getState = function() {
 	var state = {};
 	state.position = this.body.position;
 	state.live = this.live;
+	state.name = this.name
 	return state;
 }
 
