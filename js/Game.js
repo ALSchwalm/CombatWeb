@@ -128,7 +128,6 @@ Game.seedWorld = function(seed) {
 		var boxBody = new CANNON.RigidBody(0,boxShape);
 		boxBody.motionstate = 2; //make bodies motionless
 		
-		
 		var material = new THREE.ShaderMaterial( {
 			uniforms:  {
 							redWeight: 	{ type: "f", value: Math.random() },
@@ -160,6 +159,8 @@ Game.seedWorld = function(seed) {
 
 		Game.scene.add(boxMesh);
 		Game.world.add(boxBody);
+		boxMesh.sound = Sound.backgroundMusic;
+		Sound.setSourcePosition(boxMesh);
 	}
 }
 
@@ -260,7 +261,7 @@ Game.begin = function () {
 		requestAnimationFrame( update );
 		Interface.stats.update();
 		time = Date.now();
-		
+		Sound.updateListenerPosition();
 	}
 	update();
 	

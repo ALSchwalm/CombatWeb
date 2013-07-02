@@ -3,143 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>Combat</title>
-		<style>
-			html, body {
-				width: 100%;
-				height: 100%;
-			}
-
-			body {
-				background-color: #ffffff;
-				margin: 0;
-				overflow: hidden;
-				font-family: arial;
-			}
-			
-			#outercircle {
-				position: absolute;
-				margin: auto;
-				top:0;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				border-radius: 50%;
-				background:#FFF;
-				width: 4px;
-				height: 4px; 
-				visibility:hidden;
-			}
-			
-			#innercircle { 
-				position: absolute;
-				margin: auto;
-				top:0;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				border-radius: 50%;
-				background:#000;
-				width: 2px;
-				height: 2px; 
-				visibility:hidden;
-			}
-			
-			#splash {
-
-				width: 100%;
-				height: 100%;
-				
-				display: -webkit-box;
-                display: -moz-box;
-                display: box;
-
-                -webkit-box-orient: horizontal;
-                -moz-box-orient: horizontal;
-                box-orient: horizontal;
-
-                -webkit-box-pack: center;
-                -moz-box-pack: center;
-                box-pack: center;
-
-                -webkit-box-align: center;
-                -moz-box-align: center;
-                box-align: center;
-
-                color: #ffffff;
-                text-align: center;
-
-				color: #ffffff;
-				background:#000;
-				text-align: center;
-			}
-			
-			#chat_box {
-			
-				width: 	30%;
-				height: 30%;
-				
-				position: 	absolute;
-				background:	rgba(200, 54, 54, 0.0);
-				border-radius: 15px;
-				left: 	1%;
-				bottom: 1%;
-			}
-			
-			#chat_text {
-				position: absolute;
-				color: white;
-				text-shadow:
-					-1px -1px 0 #000,  
-					1px -1px 0 #000,
-					-1px 1px 0 #000,
-					1px 1px 0 #000;
-				left: 2%;
-				bottom: 12px;
-				overflow: hidden
-			}
-			
-			#chat_input {
-				position: absolute;
-				bottom: 0;
-				background-color: rgba(0,0,0,0.8);
-				border: 1px solid rgba(255, 255, 255, .2);
-				width: 100%;
-				color: white; 
-				-webkit-font-smoothing: antialiased;
-			}
-			
-			.player_name {
-				color: green;
-				font-weight:bold;
-				text-shadow:
-					-1px -1px 0 #000,  
-					1px -1px 0 #000,
-					-1px 1px 0 #000,
-					1px 1px 0 #000;
-			}
-			
-			.other_player_name {
-				color: CornflowerBlue ;
-				font-weight:bold;
-				text-shadow:
-					-1px -1px 0 #000,  
-					1px -1px 0 #000,
-					-1px 1px 0 #000,
-					1px 1px 0 #000;
-			}
-			
-			.server_message {
-				color: Tomato  ;
-				font-weight:bold;
-				text-shadow:
-					-1px -1px 0 #000,  
-					1px -1px 0 #000,
-					-1px 1px 0 #000,
-					1px 1px 0 #000;
-			}
-			
-			
-		</style>
+		<link rel="stylesheet" href="/css/styles.css" />
 	</head>
 	<body>
 		
@@ -224,18 +88,19 @@
 	<script src="js/Interface.js"></script>
 	<script src="js/Player.js"></script>
 	<script src="js/Utils.js"></script>
+	<script src="js/Sound.js"></script>
 	
-	
+	<!--
 	<audio autoplay loop id="background_music">
 		<source src="assets/angrymob.mp3">
 	</audio>
-	
+	-->
 	
 	<script>
 		var startTime = 3.0
 		var count=0;
 		var volume = 0;
-		$("#background_music").get(0).volume = 0
+		//$("#background_music").get(0).volume = 0
 		var timer = setInterval( counter, 100);
 		var fade_music;
 		
@@ -270,16 +135,17 @@
 			$("#time").html( parseFloat(Math.round((startTime - count*0.1)*10 )/10).toFixed(1));
 		}
 		
-		
+		/*
 		function fade() {
 			volume += 0.01;
 			$("#background_music").get(0).volume = volume;
 			if (volume >= 1.0)
 				clearInterval(fade_music);
 		}
-		
+		*/
 		Network.setup();
 		Interface.setup();
+		Sound.setup();
 		Game.setupPhysics();
 		Game.setupRender();
 
