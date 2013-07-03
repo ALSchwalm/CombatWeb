@@ -119,7 +119,7 @@ Game.setupRender = function() {
 Game.seedWorld = function(seed) {
 	Math.seedrandom(seed);
 
-	var worldObjects = Math.random() * 50 + 2;
+	var worldObjects = 1 //Math.random() * 50 + 2;
 	
 	for(var i =0; i < worldObjects; i++) {
 		var halfExtents = new CANNON.Vec3(10,10,10);

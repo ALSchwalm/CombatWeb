@@ -70,7 +70,18 @@ Sound.updateListenerPosition = function() {
 	var projector = new THREE.Projector();
 	var vector = new THREE.Vector3(0,0,0);
 	var pos = projector.unprojectVector(vector, Game.camera);
+	
 	Sound.audio.context.listener.setPosition(pos.x, pos.y, pos.z);
+	
+	vector = new THREE.Vector3(0,0,1);
+	var direction = projector.unprojectVector(vector, Game.camera);
+	direction.normalize();
+	
+	vector = new THREE.Vector3(0,-1,0);
+	var up = projector.unprojectVector(vector, Game.camera);
+	up.normalize();
+
+	Sound.audio.context.listener.setOrientation(direction.x, direction.y, direction.z, up.x, up.y, up.z);
 }
 
 Sound.setSourcePosition = function(object) {
