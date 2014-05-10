@@ -22,7 +22,7 @@ Sound.setup = function() {
     a.convolverGain.connect(a.volume);
     a.volume.connect(a.context.destination);
 
-    
+
     Sound.backgroundMusic = Sound.loadSound("assets/angrymob.mp3");
 }
 
@@ -75,12 +75,12 @@ Sound.updateListenerPosition = function() {
     
     vector = new THREE.Vector3(0,0,1);
     var direction = projector.unprojectVector(vector, Game.camera);
-    direction.normalize();
+    direction = vector.sub(Game.player.body.position).normalize()
     
-    vector = new THREE.Vector3(0,-1,0);
+    vector = new THREE.Vector3(0,1,0);
     var up = projector.unprojectVector(vector, Game.camera);
-    up.normalize();
-
+    up = vector.sub(Game.player.body.position).normalize()
+    
     Sound.audio.context.listener.setOrientation(direction.x, direction.y, direction.z, up.x, up.y, up.z);
 }
 
