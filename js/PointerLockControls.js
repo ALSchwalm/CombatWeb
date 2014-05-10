@@ -2,14 +2,14 @@
  * @author mrdoob / http://mrdoob.com/
  * @author schteppe / https://github.com/schteppe
  */
- var PointerLockControls = function ( camera, cannonBody ) {
+var PointerLockControls = function ( camera, cannonBody ) {
 
     var eyeYPos = 2; // eyes are 2 meters above the ground
     var velocityFactor = 0.4;
     var jumpVelocity = 20;
-	var friction = 0.2;
-	var airControlFactor = 0.3;
-	var maxVelocity = 30;
+    var friction = 0.2;
+    var airControlFactor = 0.3;
+    var maxVelocity = 30;
     var scope = this;
 
     var pitchObject = new THREE.Object3D();
@@ -48,7 +48,7 @@
     var velocity = cannonBody.velocity;
 
     var PI_2 = Math.PI / 2;
-	
+    
     var onMouseMove = function ( event ) {
 
         if ( scope.enabled === false ) return;
@@ -63,66 +63,66 @@
     };
 
     var onKeyDown = function ( event ) {
-		if (!scope.enabled) return
+	if (!scope.enabled) return
 
         switch ( event.keyCode ) {
-            case 38: // up
-            case 87: // w
-                moveForward = true;
-                break;
+        case 38: // up
+        case 87: // w
+            moveForward = true;
+            break;
 
-            case 37: // left
-            case 65: // a
-                moveLeft = true; break;
+        case 37: // left
+        case 65: // a
+            moveLeft = true; break;
 
-            case 40: // down
-            case 83: // s
-                moveBackward = true;
-                break;
+        case 40: // down
+        case 83: // s
+            moveBackward = true;
+            break;
 
-            case 39: // right
-            case 68: // d
-                moveRight = true;
-                break;
+        case 39: // right
+        case 68: // d
+            moveRight = true;
+            break;
 
-            case 32: // space
-                if ( canJump === true ){
-                    velocity.y = jumpVelocity;
-                }
-                canJump = false;
-                break;
-				
-			case 84: // t
-				$('#chat_input').focus();
-				event.preventDefault(); //Stop the 't' press from being set to the textbox
-				break;
+        case 32: // space
+            if ( canJump === true ){
+                velocity.y = jumpVelocity;
+            }
+            canJump = false;
+            break;
+	    
+	case 84: // t
+	    $('#chat_input').focus();
+	    event.preventDefault(); //Stop the 't' press from being set to the textbox
+	    break;
         }
 
     };
 
     var onKeyUp = function ( event ) {
-		if (!scope.enabled) return
+	if (!scope.enabled) return
         switch( event.keyCode ) {
 
-            case 38: // up
-            case 87: // w
-                moveForward = false;
-                break;
+        case 38: // up
+        case 87: // w
+            moveForward = false;
+            break;
 
-            case 37: // left
-            case 65: // a
-                moveLeft = false;
-                break;
+        case 37: // left
+        case 65: // a
+            moveLeft = false;
+            break;
 
-            case 40: // down
-            case 83: // a
-                moveBackward = false;
-                break;
+        case 40: // down
+        case 83: // a
+            moveBackward = false;
+            break;
 
-            case 39: // right
-            case 68: // d
-                moveRight = false;
-                break;
+        case 39: // right
+        case 68: // d
+            moveRight = false;
+            break;
 
         }
 
@@ -147,51 +147,51 @@
     var inputVelocity = new THREE.Vector3();
     this.update = function ( delta ) {
         delta *= 0.5;
-		
+	
         inputVelocity.set(0,0,0);
 
         if ( moveForward){
-			inputVelocity.z = -velocityFactor * delta;
-			if (!canJump)
-				inputVelocity.z *= airControlFactor;
+	    inputVelocity.z = -velocityFactor * delta;
+	    if (!canJump)
+		inputVelocity.z *= airControlFactor;
         }
-		
+	
         if ( moveBackward){
             inputVelocity.z = velocityFactor * delta;
-			if (!canJump)
-				inputVelocity.z *= airControlFactor;
+	    if (!canJump)
+		inputVelocity.z *= airControlFactor;
         }
 
         if ( moveLeft){
             inputVelocity.x = -velocityFactor * delta;
-			if (!canJump)
-				inputVelocity.x *= airControlFactor;
+	    if (!canJump)
+		inputVelocity.x *= airControlFactor;
         }
-		
+	
         if ( moveRight){
             inputVelocity.x = velocityFactor * delta;
-			if (!canJump)
-				inputVelocity.x *= airControlFactor;
+	    if (!canJump)
+		inputVelocity.x *= airControlFactor;
         }
-		
-		if (canJump) {
-			velocity.x *= 0.9;
-			velocity.z *= 0.9;
-		}
+	
+	if (canJump) {
+	    velocity.x *= 0.9;
+	    velocity.z *= 0.9;
+	}
 
         // Convert velocity to world coordinates
-        quat.setFromEuler({x:pitchObject.rotation.x, y:yawObject.rotation.y, z:0},"XYZ");
+        quat.setFromEuler(new THREE.Euler(pitchObject.rotation.x, yawObject.rotation.y, 0, "XYZ"));
         inputVelocity.applyQuaternion(quat);
-		
-		if ( Utils.vectMag( {x: velocity.x + inputVelocity.x, 
-							 y: velocity.y + inputVelocity.y, 
-							 z: velocity.z}) < maxVelocity) {
-							 
-			// Add to the object
-			velocity.x += inputVelocity.x;
-			velocity.z += inputVelocity.z;
-		}
-		
+	
+	if ( Utils.vectMag( {x: velocity.x + inputVelocity.x, 
+			     y: velocity.y + inputVelocity.y, 
+			     z: velocity.z}) < maxVelocity) {
+	    
+	    // Add to the object
+	    velocity.x += inputVelocity.x;
+	    velocity.z += inputVelocity.z;
+	}
+	
         cannonBody.position.copy(yawObject.position);
     };
 };

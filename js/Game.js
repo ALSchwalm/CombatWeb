@@ -12,262 +12,261 @@ Game.receivedStateBuffer = [];
 Game.projectedStateBuffer = [];
 
 Game.setupPhysics = function(){
-	// Setup our world
-	Game.world = new CANNON.World();
-	Game.world.quatNormalizeSkip = 0;
-	Game.world.quatNormalizeFast = false;
+    // Setup our world
+    Game.world = new CANNON.World();
+    Game.world.quatNormalizeSkip = 0;
+    Game.world.quatNormalizeFast = false;
 
-	Game.world.defaultContactMaterial.contactEquationStiffness = 1e9;
-	Game.world.defaultContactMaterial.contactEquationRegularizationTime = 3;
-	
-	Game.world.gravity.set(0,-40,0);
-	Game.world.broadphase = new CANNON.NaiveBroadphase();
+    Game.world.defaultContactMaterial.contactEquationStiffness = 1e9;
+    Game.world.defaultContactMaterial.contactEquationRegularizationTime = 3;
+    
+    Game.world.gravity.set(0,-40,0);
+    Game.world.broadphase = new CANNON.NaiveBroadphase();
 
-	var solver = new CANNON.GSSolver();
-	solver.iterations = 7;
-	solver.tolerance = 0.1;
+    var solver = new CANNON.GSSolver();
+    solver.iterations = 7;
+    solver.tolerance = 0.1;
 
-	Game.world.solver = new CANNON.SplitSolver(solver);
+    Game.world.solver = new CANNON.SplitSolver(solver);
 
-	// Create a slippery material (friction coefficient = 0.0)
-	defaultMaterial = new CANNON.Material("defaultMaterial");
-	var physicsContactMaterial = new CANNON.ContactMaterial(defaultMaterial,
-															defaultMaterial,
-															400, // friction coefficient
-															0.3  // restitution
-															);
-	// We must add the contact materials to the world
-	Game.world.addContactMaterial(physicsContactMaterial);
-	
-	Game.player = new Player(Network.socket.socket.sessionid);
-	Game.world.add(Game.player.body);
+    // Create a slippery material (friction coefficient = 0.0)
+    defaultMaterial = new CANNON.Material("defaultMaterial");
+    var physicsContactMaterial = new CANNON.ContactMaterial(defaultMaterial,
+							    defaultMaterial,
+							    400, // friction coefficient
+							    0.3  // restitution
+							   );
+    // We must add the contact materials to the world
+    Game.world.addContactMaterial(physicsContactMaterial);
+    
+    Game.player = new Player(Network.socket.socket.sessionid);
+    Game.world.add(Game.player.body);
 
-	// Create a plane
-	var groundBody = new CANNON.RigidBody(0,new CANNON.Plane(),defaultMaterial);
-	groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-	Game.world.add(groundBody);
+    // Create a plane
+    var groundBody = new CANNON.RigidBody(0,new CANNON.Plane(),defaultMaterial);
+    groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+    Game.world.add(groundBody);
 }
 
 
 Game.setupRender = function() {
-	Game.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 1000 );
+    Game.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 1000 );
 
-	Game.scene = new THREE.Scene();
-	Game.scene.fog = new THREE.Fog( 0x000000, 0, 500 );
+    Game.scene = new THREE.Scene();
+    Game.scene.fog = new THREE.Fog( 0x000000, 0, 500 );
 
-	var ambient = new THREE.AmbientLight( 0x222222 );
-	Game.scene.add( ambient );
+    var ambient = new THREE.AmbientLight( 0x222222 );
+    Game.scene.add( ambient );
 
-	var light = new THREE.DirectionalLight( 0xffffff );
-	light.position.set( 10, 60, 20 );
-	light.target.position.set( 0, 0, 0 );
+    var light = new THREE.DirectionalLight( 0xffffff );
+    light.position.set( 10, 60, 20 );
+    light.target.position.set( 0, 0, 0 );
 
-	light.castShadow = true;
+    light.castShadow = true;
 
-	light.shadowCameraNear = 3;
-	light.shadowCameraFar = Game.camera.far;
-	light.shadowCameraFov = 50;
+    light.shadowCameraNear = 3;
+    light.shadowCameraFar = Game.camera.far;
+    light.shadowCameraFov = 50;
 
-	light.shadowMapDarkness = 1;
-	light.shadowMapWidth = 1024;
-	light.shadowMapHeight = 1024;
-	light.shadowCameraVisible = true;
-	
-	Game.scene.add( light );
-	Game.controls = new PointerLockControls( Game.camera , Game.player.body );
-	Game.scene.add( Game.controls.getObject() );
+    light.shadowMapDarkness = 1;
+    light.shadowMapWidth = 1024;
+    light.shadowMapHeight = 1024;
+    light.shadowCameraVisible = true;
+    
+    Game.scene.add( light );
+    Game.controls = new PointerLockControls( Game.camera , Game.player.body );
+    Game.scene.add( Game.controls.getObject() );
 
-	// floor
-	var geometry = new THREE.PlaneGeometry( 300, 300, 50, 50 );
-	geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+    // floor
+    var geometry = new THREE.PlaneGeometry( 300, 300, 50, 50 );
+    geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 
-	var floorTexture = THREE.ImageUtils.loadTexture('./assets/floor4.gif');
-	floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-	floorTexture.repeat.set( 8, 8 );
-	
-	var material = new THREE.MeshLambertMaterial(  {map:  floorTexture});
-	
-	var mesh = new THREE.Mesh( geometry, material );
-	mesh.castShadow = true;
-	mesh.receiveShadow = true;
-	Game.scene.add( mesh );
+    var floorTexture = THREE.ImageUtils.loadTexture('./assets/floor4.gif');
+    floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+    floorTexture.repeat.set( 8, 8 );
+    
+    var material = new THREE.MeshLambertMaterial(  {map:  floorTexture});
+    
+    var mesh = new THREE.Mesh( geometry, material );
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    Game.scene.add( mesh );
 
-	Game.renderer = new THREE.WebGLRenderer({ antialias: true });
-	Game.renderer.shadowMapEnabled = true;
-	Game.renderer.shadowMapSoft = true;
-	Game.renderer.setSize( window.innerWidth, window.innerHeight );
-	Game.renderer.setClearColor( Game.scene.fog.color, 1 );
-	Game.renderer.autoClear = false;
-	
-	document.body.appendChild( Game.renderer.domElement );
-	
-	// postprocessing
-	Game.composer = new THREE.EffectComposer( Game.renderer );
-	Game.composer.addPass( new THREE.RenderPass( Game.scene, Game.camera ) );
-	Game.shaders = {};
-	
-	var fxaaEffect = new THREE.ShaderPass( THREE.FXAAShader );
-	fxaaEffect.uniforms[ 'resolution' ].value.set( 1 / Interface.SCREEN_WIDTH, 1 / Interface.SCREEN_HEIGHT );
+    Game.renderer = new THREE.WebGLRenderer({ antialias: true });
+    Game.renderer.shadowMapEnabled = true;
+    Game.renderer.shadowMapSoft = true;
+    Game.renderer.setSize( window.innerWidth, window.innerHeight );
+    Game.renderer.setClearColor( Game.scene.fog.color, 1 );
+    Game.renderer.autoClear = false;
+    
+    document.body.appendChild( Game.renderer.domElement );
+    
+    // postprocessing
+    Game.composer = new THREE.EffectComposer( Game.renderer );
+    Game.composer.addPass( new THREE.RenderPass( Game.scene, Game.camera ) );
+    Game.shaders = {};
+    
+    var fxaaEffect = new THREE.ShaderPass( THREE.FXAAShader );
+    fxaaEffect.uniforms[ 'resolution' ].value.set( 1 / Interface.SCREEN_WIDTH, 1 / Interface.SCREEN_HEIGHT );
 
-	fxaaEffect.renderToScreen = true;
-	
-	Game.shaders["fxaaEffect"] = fxaaEffect;
-	Game.composer.addPass( fxaaEffect );
-	
+    fxaaEffect.renderToScreen = true;
+    
+    Game.shaders["fxaaEffect"] = fxaaEffect;
+    Game.composer.addPass( fxaaEffect );
+    
 }
 
 Game.seedWorld = function(seed) {
-	Math.seedrandom(seed);
+    Math.seedrandom(seed);
 
-	var worldObjects = 1 //Math.random() * 50 + 2;
+    var worldObjects = 1 //Math.random() * 50 + 2;
+    
+    for(var i =0; i < worldObjects; i++) {
+	var halfExtents = new CANNON.Vec3(10,10,10);
+	var boxShape = new CANNON.Box(halfExtents);
+	var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
+	var boxBody = new CANNON.RigidBody(0,boxShape);
+	boxBody.motionstate = 2; //make bodies motionless
 	
-	for(var i =0; i < worldObjects; i++) {
-		var halfExtents = new CANNON.Vec3(10,10,10);
-		var boxShape = new CANNON.Box(halfExtents);
-		var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
-		var boxBody = new CANNON.RigidBody(0,boxShape);
-		boxBody.motionstate = 2; //make bodies motionless
-		
-		var material = new THREE.ShaderMaterial( {
-			uniforms:  {
-							redWeight: 	{ type: "f", value: Math.random() },
-							blueWeight:	{ type: "f", value: Math.random() },
-							greenWeight:{ type: "f", value: Math.random() }
-						},
-			vertexShader: document.getElementById( 'vertexShader' ).textContent,
-			fragmentShader: document.getElementById( 'fragment_shader2' ).textContent
-		});
-		
-		var tempColor = Utils.randomColor();
-		var boxMesh = new THREE.Mesh( boxGeometry, material);
-		
-		var randomPosition = {  x : 200*Math.random() - 100,
-								y : 20*Math.random() - 5,
-								z : 200*Math.random() - 100}
-		
-		boxBody.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
+	var material = new THREE.ShaderMaterial( {
+	    uniforms:  {
+		redWeight: 	{ type: "f", value: Math.random() },
+		blueWeight:	{ type: "f", value: Math.random() },
+		greenWeight:{ type: "f", value: Math.random() }
+	    },
+	    vertexShader: document.getElementById( 'vertexShader' ).textContent,
+	    fragmentShader: document.getElementById( 'fragment_shader2' ).textContent
+	});
+	
+	var tempColor = Utils.randomColor();
+	var boxMesh = new THREE.Mesh( boxGeometry, material);
+	
+	var randomPosition = {  x : 200*Math.random() - 100,
+				y : 20*Math.random() - 5,
+				z : 200*Math.random() - 100}
+	
+	boxBody.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
 
-		boxBody.quaternion.setFromVectors(new CANNON.Vec3(Math.random(), Math.random(), Math.random()), 
-											new CANNON.Vec3(Math.random(), Math.random(), Math.random()));
-		
-		boxBody.position.copy(boxMesh.position);
-		boxBody.quaternion.copy(boxMesh.quaternion);
+	boxBody.quaternion.setFromVectors(new CANNON.Vec3(Math.random(), Math.random(), Math.random()), 
+					  new CANNON.Vec3(Math.random(), Math.random(), Math.random()));
+	
+	boxBody.position.copy(boxMesh.position);
+	boxBody.quaternion.copy(boxMesh.quaternion);
 
-		boxMesh.castShadow = true;
-		boxMesh.receiveShadow = true;
-		boxMesh.useQuaternion = true;
+	boxMesh.castShadow = true;
+	boxMesh.receiveShadow = true;
 
-		Game.scene.add(boxMesh);
-		Game.world.add(boxBody);
-		boxMesh.sound = Sound.backgroundMusic;
-		Sound.setSourcePosition(boxMesh);
-	}
+	Game.scene.add(boxMesh);
+	Game.world.add(boxBody);
+	boxMesh.sound = Sound.backgroundMusic;
+	Sound.setSourcePosition(boxMesh);
+    }
 }
 
 Game.updateState = function(newState) {
-	Game.currentState = newState;
-	for(var playerID in newState.players) {
-		if(playerID != Game.player.ID) {
-			if (Game.otherPlayers[playerID])
-				Game.otherPlayers[playerID].setState(newState.players[playerID]);
-			else {
-				Game.otherPlayers[playerID] = new Player(playerID, newState.players[playerID].name); //player appears unexpectedly
-				Game.otherPlayers[playerID].setState(newState.players[playerID]);
-				Game.otherPlayers[playerID].spawn();
-			}
-		}
+    Game.currentState = newState;
+    for(var playerID in newState.players) {
+	if(playerID != Game.player.ID) {
+	    if (Game.otherPlayers[playerID])
+		Game.otherPlayers[playerID].setState(newState.players[playerID]);
+	    else {
+		Game.otherPlayers[playerID] = new Player(playerID, newState.players[playerID].name); //player appears unexpectedly
+		Game.otherPlayers[playerID].setState(newState.players[playerID]);
+		Game.otherPlayers[playerID].spawn();
+	    }
 	}
-	
-	for(var playerID in Game.otherPlayers) {
-		if (!newState.players[playerID]) {
-			Game.scene.remove(Game.otherPlayers[playerID].mesh);
-			delete Game.otherPlayers[playerID];
-		}
+    }
+    
+    for(var playerID in Game.otherPlayers) {
+	if (!newState.players[playerID]) {
+	    Game.scene.remove(Game.otherPlayers[playerID].mesh);
+	    delete Game.otherPlayers[playerID];
 	}
-	
+    }
+    
 }
 
 Game.interpolate = function(newState) {	
-	//Drop all previous interpolated states. This prevents any kind of build up of states, if
-	//we have < 60 fps etc.
-	Game.projectedStateBuffer = [];
-	
-	if (!Game.currentState)
-		Game.currentState = newState;
-	var oldState = Game.currentState;
+    //Drop all previous interpolated states. This prevents any kind of build up of states, if
+    //we have < 60 fps etc.
+    Game.projectedStateBuffer = [];
+    
+    if (!Game.currentState)
+	Game.currentState = newState;
+    var oldState = Game.currentState;
 
-	
-	Game.interpConst = (Network.latency+50)/(1000/Game.FPS);
-	
-	for(var i=0; i < Game.interpConst; i++) {
-		var interpState = {players:{}};
-		for(var player in newState.players) {
-			if (oldState.players[player]) {
-				interpState.players[player] = {
-					position : { x : Utils.averageValue(oldState.players[player].position.x, 
-														newState.players[player].position.x,
-														Game.interpConst,
-														i),
-								y : Utils.averageValue(oldState.players[player].position.y, 
-														newState.players[player].position.y,
-														Game.interpConst,
-														i),
-								z : Utils.averageValue(oldState.players[player].position.z, 
-														newState.players[player].position.z,
-														Game.interpConst,
-														i)
-					}
-				}
-			}
-			else {
-				interpState.players[player] = newState.players[player];
-			}
+    
+    Game.interpConst = (Network.latency+50)/(1000/Game.FPS);
+    
+    for(var i=0; i < Game.interpConst; i++) {
+	var interpState = {players:{}};
+	for(var player in newState.players) {
+	    if (oldState.players[player]) {
+		interpState.players[player] = {
+		    position : { x : Utils.averageValue(oldState.players[player].position.x, 
+							newState.players[player].position.x,
+							Game.interpConst,
+							i),
+				 y : Utils.averageValue(oldState.players[player].position.y, 
+							newState.players[player].position.y,
+							Game.interpConst,
+							i),
+				 z : Utils.averageValue(oldState.players[player].position.z, 
+							newState.players[player].position.z,
+							Game.interpConst,
+							i)
+			       }
 		}
-		
-		Game.projectedStateBuffer.push(interpState);
+	    }
+	    else {
+		interpState.players[player] = newState.players[player];
+	    }
 	}
-	Game.projectedStateBuffer.push(newState);
+	
+	Game.projectedStateBuffer.push(interpState);
+    }
+    Game.projectedStateBuffer.push(newState);
 }
 
 
 Game.begin = function () {
-	
-	Network.socket.emit("playerSpawn", Network.socket.ID);
-	Game.player.live = true;
-	Interface.stats.domElement.style.visibility = "visible";
-	
-	var time = Date.now();
-	function update() {
-		if(Game.projectedStateBuffer.length > 0) {
-			Game.updateState(Game.projectedStateBuffer[0]);
-			Game.projectedStateBuffer.splice(0, 1);
-		} else {
-			console.log("empty buffer");
-		}
-		
-		if (Game.player.live) {
-			//Update physics
-			Game.world.step(1/60);
-		
-			//Update controls
-			Game.controls.update(Date.now() - time );
-		}
-		//Render scene
-		Game.renderer.render( Game.scene, Game.camera );
-		
-		//Apply postprocessing
-		Game.composer.render(0.05)
-		
-		requestAnimationFrame( update );
-		Interface.stats.update();
-		time = Date.now();
-		Sound.updateListenerPosition();
+    
+    Network.socket.emit("playerSpawn", Network.socket.ID);
+    Game.player.live = true;
+    Interface.stats.domElement.style.visibility = "visible";
+    
+    var time = Date.now();
+    function update() {
+	if(Game.projectedStateBuffer.length > 0) {
+	    Game.updateState(Game.projectedStateBuffer[0]);
+	    Game.projectedStateBuffer.splice(0, 1);
+	} else {
+	    console.log("empty buffer");
 	}
-	update();
 	
-	setInterval(Network.findLatency, 2000);
+	if (Game.player.live) {
+	    //Update physics
+	    Game.world.step(1/60);
+	    
+	    //Update controls
+	    Game.controls.update(Date.now() - time );
+	}
+	//Render scene
+	Game.renderer.render( Game.scene, Game.camera );
 	
-	setInterval(function() {
-		Network.socket.emit("playerState", Game.player.getState())
-	}, 20);
+	//Apply postprocessing
+	Game.composer.render(0.05)
+	
+	requestAnimationFrame( update );
+	Interface.stats.update();
+	time = Date.now();
+	Sound.updateListenerPosition();
+    }
+    update();
+    
+    setInterval(Network.findLatency, 2000);
+    
+    setInterval(function() {
+	Network.socket.emit("playerState", Game.player.getState())
+    }, 20);
 }
