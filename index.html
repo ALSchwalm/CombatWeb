@@ -1,151 +1,151 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<title>Combat</title>
-		<link rel="stylesheet" href="/css/styles.css" />
-	</head>
-	<body>
-		
-		<div id="splash" style="font-size:60px">
-			Get Ready:
-			<div id="time" >
-			</div>
-		</div>
+    <head>
+        <meta charset="utf-8" />
+        <title>Combat</title>
+        <link rel="stylesheet" href="/css/styles.css" />
+    </head>
+    <body>
 
-		<div id="outercircle">
-			<div id="innercircle">
-			</div>
-		</div>
-		
-		<div id="chat_box">
-			<div id="chat_text">
-				<p id='chat_text_paragraph'>
-				</p>
-			</div>
-			<input type="text" id="chat_input" type="submit" ><br>
-		</div>
+        <div id="splash" style="font-size:60px">
+            Get Ready:
+            <div id="time" >
+            </div>
+        </div>
 
-	</body>
+        <div id="outercircle">
+            <div id="innercircle">
+            </div>
+        </div>
 
-	
-	<script id="fragment_shader2" type="x-shader/x-fragment">
-	uniform float redWeight;
-	uniform float blueWeight;
-	uniform float greenWeight;
-	
-	uniform vec2 resolution;
+        <div id="chat_box">
+            <div id="chat_text">
+	        <p id='chat_text_paragraph'>
+	        </p>
+            </div>
+            <input type="text" id="chat_input" type="submit" ><br>
+        </div>
 
-	varying vec2 vUv;
+    </body>
 
-	void main( void ) {
 
-		vec2 position = vUv;
-		float red = redWeight;
-		float blue = blueWeight;
-		float green = greenWeight;
-		
-		if ( (position.x > 0.99 || position.x < 0.01) || (position.y < 0.01 ||  position.y > 0.99) ) {
-			red = 0.0;
-			blue = 0.0;
-			green = 0.0;
-		}
-		gl_FragColor = vec4( red, green, blue, 1.0 );
-	}
+    <script id="fragment_shader2" type="x-shader/x-fragment">
+     uniform float redWeight;
+     uniform float blueWeight;
+     uniform float greenWeight;
 
-	</script>
+     uniform vec2 resolution;
 
-	<script id="vertexShader" type="x-shader/x-vertex">
-		varying vec2 vUv;
+     varying vec2 vUv;
 
-		void main()
-		{
-			vUv = uv;
-			vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-			gl_Position = projectionMatrix * mvPosition;
-		}
+     void main( void ) {
 
-	</script>
-	
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-	<script src="js/three.min.js"></script>
-	<script src="js/cannon.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
-	<script src="js/seedrandom.js"></script>
-	<script src="js/stats.min.js"></script>
-	<script src="js/ColorConverter.js"></script>
-	
-	<script src="js/shaders/CopyShader.js"></script>
-	<script src="js/shaders/FXAAShader.js"></script>
-	<script src="js/postprocessing/EffectComposer.js"></script>
-	<script src="js/postprocessing/RenderPass.js"></script>
-	<script src="js/postprocessing/ShaderPass.js"></script>
-	<script src="js/postprocessing/MaskPass.js"></script>
-	
-	<script src="js/PointerLockControls.js"></script>
-	<script src="js/Network.js"></script>
-	<script src="js/Game.js"></script>
-	<script src="js/Interface.js"></script>
-	<script src="js/Player.js"></script>
-	<script src="js/Utils.js"></script>
-	<script src="js/Sound.js"></script>
-	
-	<audio autoplay loop id="background_music">
-		<source src="assets/angrymob.mp3">
-	</audio>
-	
-	<script>
-		var startTime = 3.0
-		var count=0;
-		var volume = 0;
-		$("#background_music").get(0).volume = 0
-		var timer = setInterval( counter, 100);
-		var fade_music;
-		
-		$('#chat_input').focus( function() {
-			Game.controls.enabled = false;
-		});
-		
-		$('#chat_input').keypress( function(e) {
-			if (e.which == 13) {	//submit text on enter
-				$('#chat_input').submit();
-				$('#chat_input').blur()
-				Game.controls.enabled = true;
-			}
-		});
-		
-		$('#chat_input').submit( function(){
-			Network.socket.emit('message', {source:Network.ID, message:$('#chat_input').val()});
-			$('#chat_input').val(''); //clear text box
-		});
-		
-		
-		function counter() {
-			count++;
-			if (count >= 30) {
-				clearInterval(timer);
-				$('#innercircle').css('visibility', 'visible')
-				$('#outercircle').css('visibility', 'visible')
-				$('#splash').remove();
-				//fade_music= setInterval( fade, 100);
-				Game.begin();
-			}
-			$("#time").html( parseFloat(Math.round((startTime - count*0.1)*10 )/10).toFixed(1));
-		}
-		
+         vec2 position = vUv;
+         float red = redWeight;
+         float blue = blueWeight;
+         float green = greenWeight;
 
-		function fade() {
-			volume += 0.01;
-			$("#background_music").get(0).volume = volume;
-			if (volume >= 1.0)
-				clearInterval(fade_music);
-		}
+         if ( (position.x > 0.99 || position.x < 0.01) || (position.y < 0.01 ||  position.y > 0.99) ) {
+             red = 0.0;
+             blue = 0.0;
+             green = 0.0;
+         }
+         gl_FragColor = vec4( red, green, blue, 1.0 );
+     }
 
-		Network.setup();
-		Interface.setup();
-		Sound.setup();
-		Game.setupPhysics();
-		Game.setupRender();
+    </script>
 
-	</script>
+    <script id="vertexShader" type="x-shader/x-vertex">
+     varying vec2 vUv;
+
+     void main()
+     {
+         vUv = uv;
+         vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+         gl_Position = projectionMatrix * mvPosition;
+     }
+
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script src="js/three.min.js"></script>
+    <script src="js/cannon.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/seedrandom.js"></script>
+    <script src="js/stats.min.js"></script>
+    <script src="js/ColorConverter.js"></script>
+
+    <script src="js/shaders/CopyShader.js"></script>
+    <script src="js/shaders/FXAAShader.js"></script>
+    <script src="js/postprocessing/EffectComposer.js"></script>
+    <script src="js/postprocessing/RenderPass.js"></script>
+    <script src="js/postprocessing/ShaderPass.js"></script>
+    <script src="js/postprocessing/MaskPass.js"></script>
+
+    <script src="js/PointerLockControls.js"></script>
+    <script src="js/Network.js"></script>
+    <script src="js/Game.js"></script>
+    <script src="js/Interface.js"></script>
+    <script src="js/Player.js"></script>
+    <script src="js/Utils.js"></script>
+    <script src="js/Sound.js"></script>
+
+    <audio autoplay loop id="background_music">
+        <source src="assets/angrymob.mp3">
+    </audio>
+
+    <script>
+     var startTime = 3.0
+     var count=0;
+     var volume = 0;
+     $("#background_music").get(0).volume = 0
+     var timer = setInterval( counter, 100);
+     var fade_music;
+
+     $('#chat_input').focus( function() {
+         Game.controls.enabled = false;
+     });
+
+     $('#chat_input').keypress( function(e) {
+         if (e.which == 13) {	//submit text on enter
+                             $('#chat_input').submit();
+                             $('#chat_input').blur()
+                             Game.controls.enabled = true;
+                             }
+     });
+
+     $('#chat_input').submit( function(){
+         Network.socket.emit('message', {source:Network.ID, message:$('#chat_input').val()});
+         $('#chat_input').val(''); //clear text box
+     });
+
+
+     function counter() {
+         count++;
+         if (count >= 30) {
+             clearInterval(timer);
+             $('#innercircle').css('visibility', 'visible')
+             $('#outercircle').css('visibility', 'visible')
+             $('#splash').remove();
+             //fade_music= setInterval( fade, 100);
+             Game.begin();
+         }
+         $("#time").html( parseFloat(Math.round((startTime - count*0.1)*10 )/10).toFixed(1));
+     }
+
+
+     function fade() {
+         volume += 0.01;
+         $("#background_music").get(0).volume = volume;
+         if (volume >= 1.0)
+         clearInterval(fade_music);
+     }
+
+     Network.setup();
+     Interface.setup();
+     Sound.setup();
+     Game.setupPhysics();
+     Game.setupRender();
+
+    </script>
 </html>
