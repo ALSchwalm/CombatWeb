@@ -19,7 +19,7 @@ Game.setupPhysics = function(){
 
     Game.world.defaultContactMaterial.contactEquationStiffness = 1e9;
     Game.world.defaultContactMaterial.contactEquationRegularizationTime = 3;
-    
+
     Game.world.gravity.set(0,-40,0);
     Game.world.broadphase = new CANNON.NaiveBroadphase();
 
@@ -38,7 +38,7 @@ Game.setupPhysics = function(){
 							   );
     // We must add the contact materials to the world
     Game.world.addContactMaterial(physicsContactMaterial);
-    
+
     Game.player = new Player(Network.socket.socket.sessionid);
     Game.world.add(Game.player.body);
 
@@ -72,7 +72,7 @@ Game.setupRender = function() {
     light.shadowMapWidth = 1024;
     light.shadowMapHeight = 1024;
     light.shadowCameraVisible = true;
-    
+
     Game.scene.add( light );
     Game.controls = new PointerLockControls( Game.camera , Game.player.body );
     Game.scene.add( Game.controls.getObject() );
@@ -84,9 +84,9 @@ Game.setupRender = function() {
     var floorTexture = THREE.ImageUtils.loadTexture('./assets/floor4.gif');
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
     floorTexture.repeat.set( 8, 8 );
-    
+
     var material = new THREE.MeshLambertMaterial(  {map:  floorTexture});
-    
+
     var mesh = new THREE.Mesh( geometry, material );
     mesh.castShadow = true;
     mesh.receiveShadow = true;
@@ -98,36 +98,36 @@ Game.setupRender = function() {
     Game.renderer.setSize( window.innerWidth, window.innerHeight );
     Game.renderer.setClearColor( Game.scene.fog.color, 1 );
     Game.renderer.autoClear = false;
-    
+
     document.body.appendChild( Game.renderer.domElement );
-    
+
     // postprocessing
     Game.composer = new THREE.EffectComposer( Game.renderer );
     Game.composer.addPass( new THREE.RenderPass( Game.scene, Game.camera ) );
     Game.shaders = {};
-    
+
     var fxaaEffect = new THREE.ShaderPass( THREE.FXAAShader );
     fxaaEffect.uniforms[ 'resolution' ].value.set( 1 / Interface.SCREEN_WIDTH, 1 / Interface.SCREEN_HEIGHT );
 
     fxaaEffect.renderToScreen = true;
-    
+
     Game.shaders["fxaaEffect"] = fxaaEffect;
     Game.composer.addPass( fxaaEffect );
-    
+
 }
 
 Game.seedWorld = function(seed) {
     Math.seedrandom(seed);
 
-    var worldObjects = 1 //Math.random() * 50 + 2;
-    
+    var worldObjects = Math.random() * 50 + 2;
+
     for(var i =0; i < worldObjects; i++) {
 	var halfExtents = new CANNON.Vec3(10,10,10);
 	var boxShape = new CANNON.Box(halfExtents);
 	var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
 	var boxBody = new CANNON.RigidBody(0,boxShape);
 	boxBody.motionstate = 2; //make bodies motionless
-	
+
 	var material = new THREE.ShaderMaterial( {
 	    uniforms:  {
 		redWeight: 	{ type: "f", value: Math.random() },
@@ -137,19 +137,19 @@ Game.seedWorld = function(seed) {
 	    vertexShader: document.getElementById( 'vertexShader' ).textContent,
 	    fragmentShader: document.getElementById( 'fragment_shader2' ).textContent
 	});
-	
+
 	var tempColor = Utils.randomColor();
 	var boxMesh = new THREE.Mesh( boxGeometry, material);
-	
+
 	var randomPosition = {  x : 200*Math.random() - 100,
 				y : 20*Math.random() - 5,
 				z : 200*Math.random() - 100}
-	
+
 	boxBody.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
 
-	boxBody.quaternion.setFromVectors(new CANNON.Vec3(Math.random(), Math.random(), Math.random()), 
+	boxBody.quaternion.setFromVectors(new CANNON.Vec3(Math.random(), Math.random(), Math.random()),
 					  new CANNON.Vec3(Math.random(), Math.random(), Math.random()));
-	
+
 	boxBody.position.copy(boxMesh.position);
 	boxBody.quaternion.copy(boxMesh.quaternion);
 
@@ -158,8 +158,6 @@ Game.seedWorld = function(seed) {
 
 	Game.scene.add(boxMesh);
 	Game.world.add(boxBody);
-	boxMesh.sound = Sound.backgroundMusic;
-	Sound.setSourcePosition(boxMesh);
     }
 }
 
@@ -176,42 +174,42 @@ Game.updateState = function(newState) {
 	    }
 	}
     }
-    
+
     for(var playerID in Game.otherPlayers) {
 	if (!newState.players[playerID]) {
 	    Game.scene.remove(Game.otherPlayers[playerID].mesh);
 	    delete Game.otherPlayers[playerID];
 	}
     }
-    
+
 }
 
-Game.interpolate = function(newState) {	
+Game.interpolate = function(newState) {
     //Drop all previous interpolated states. This prevents any kind of build up of states, if
     //we have < 60 fps etc.
     Game.projectedStateBuffer = [];
-    
+
     if (!Game.currentState)
 	Game.currentState = newState;
     var oldState = Game.currentState;
 
-    
+
     Game.interpConst = (Network.latency+50)/(1000/Game.FPS);
-    
+
     for(var i=0; i < Game.interpConst; i++) {
 	var interpState = {players:{}};
 	for(var player in newState.players) {
 	    if (oldState.players[player]) {
 		interpState.players[player] = {
-		    position : { x : Utils.averageValue(oldState.players[player].position.x, 
+		    position : { x : Utils.averageValue(oldState.players[player].position.x,
 							newState.players[player].position.x,
 							Game.interpConst,
 							i),
-				 y : Utils.averageValue(oldState.players[player].position.y, 
+				 y : Utils.averageValue(oldState.players[player].position.y,
 							newState.players[player].position.y,
 							Game.interpConst,
 							i),
-				 z : Utils.averageValue(oldState.players[player].position.z, 
+				 z : Utils.averageValue(oldState.players[player].position.z,
 							newState.players[player].position.z,
 							Game.interpConst,
 							i)
@@ -222,7 +220,7 @@ Game.interpolate = function(newState) {
 		interpState.players[player] = newState.players[player];
 	    }
 	}
-	
+
 	Game.projectedStateBuffer.push(interpState);
     }
     Game.projectedStateBuffer.push(newState);
@@ -230,11 +228,11 @@ Game.interpolate = function(newState) {
 
 
 Game.begin = function () {
-    
+
     Network.socket.emit("playerSpawn", Network.socket.ID);
     Game.player.live = true;
     Interface.stats.domElement.style.visibility = "visible";
-    
+
     var time = Date.now();
     function update() {
 	if(Game.projectedStateBuffer.length > 0) {
@@ -243,29 +241,29 @@ Game.begin = function () {
 	} else {
 	    console.log("empty buffer");
 	}
-	
+
 	if (Game.player.live) {
 	    //Update physics
 	    Game.world.step(1/60);
-	    
+
 	    //Update controls
 	    Game.controls.update(Date.now() - time );
 	}
 	//Render scene
 	Game.renderer.render( Game.scene, Game.camera );
-	
+
 	//Apply postprocessing
 	Game.composer.render(0.05)
-	
+
 	requestAnimationFrame( update );
 	Interface.stats.update();
 	time = Date.now();
 	Sound.updateListenerPosition();
     }
     update();
-    
+
     setInterval(Network.findLatency, 2000);
-    
+
     setInterval(function() {
 	Network.socket.emit("playerState", Game.player.getState())
     }, 20);

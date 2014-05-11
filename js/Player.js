@@ -2,7 +2,7 @@
 function Player(_ID, name) {
     this.ID = _ID;
     this.name = name;
-    
+
     // Create a sphere
     var mass = 50, radius = 1.3;
     this.shape = new CANNON.Sphere(radius);
@@ -12,7 +12,7 @@ function Player(_ID, name) {
 
     this.geometry = new THREE.SphereGeometry(1.3,50,50);
     this.mesh = new THREE.Mesh( this.geometry, new THREE.MeshLambertMaterial( { color: 0xdddddd } ) );
-    
+
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
 }
@@ -39,4 +39,20 @@ Player.prototype.spawn = function() {
 Player.prototype.despawn = function() {
     Game.scene.remove(this.mesh);
     this.live = false;
+}
+
+Player.prototype.emitSound = function(buffer) {
+    //Each player has a panner node to emit sounds
+    this.sound = {};
+    this.sound.source = Sound.audio.context.createBufferSource();
+    this.sound.source.loop = false;
+    this.sound.panner = Sound.audio.context.createPanner();
+    this.sound.source.connect(this.sound.panner);
+    this.sound.panner.connect(Sound.audio.destination);
+
+    var pos = this.body.position;
+    this.sound.panner.setPosition(pos.x, pos.y, pos.z);
+
+    this.sound.source.buffer = buffer;
+    this.sound.source.start(0);
 }
