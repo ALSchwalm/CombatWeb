@@ -32,8 +32,6 @@ Interface.setup = function() {
 	var canFire = true;
 	var onMouseDown = function( event ) {
 	    if (canFire && Game.player.live) {
-                Game.player.emitSound(Sound.buffers["laser"]);
-
 		var projector = new THREE.Projector();
 		var vector = new THREE.Vector3(0,0,1);
 		projector.unprojectVector(vector, Game.camera);
@@ -42,7 +40,7 @@ Interface.setup = function() {
 		var intersects = raycaster.intersectObjects( Game.scene.children );
 
 		if (intersects[0] && intersects[0].point) {
-		    Interface.createFire(raycaster.ray.origin, intersects[0].point, true);
+		    Interface.createFire(Game.player, intersects[0].point, true);
 
 		    for (playerID in Game.otherPlayers) {
 			if (intersects[0].object == Game.otherPlayers[playerID].mesh) {
@@ -52,7 +50,7 @@ Interface.setup = function() {
 		    }
 		}
 		else {
-		    Interface.createFire(raycaster.ray.origin,
+		    Interface.createFire(Game.player,
 					 raycaster.ray.origin.vadd((new THREE.Vector3()).copy(raycaster.ray.direction).multiplyScalar(100)),
 					 true);
 		}
@@ -108,18 +106,22 @@ Interface.setup = function() {
 
 }
 
-Interface.createFire = function(source, destination, local) {
+Interface.createFire = function(player, destination, local) {
+    player.emitSound(Sound.buffers["laser"]).source.onended = function() {
+        player.emitSound(Sound.buffers["recharge"], true);
+    };
+    var source = player.body.position;
     var direction = new THREE.Vector3()
     direction.copy(destination).sub(source);
 
     var cloud = new THREE.Geometry();
 
-    for(var i =0; i < 1000; i++ ) {
+    for(var i =0; i < 2000; i++ ) {
 	var vertex = new THREE.Vector3();
-	vertex.copy(source).add((new THREE.Vector3()).copy(direction).multiplyScalar(Math.random()));
-	vertex.x += Math.random()*0.05 - 0.025;
-	vertex.y += Math.random()*0.05 - 0.025;
-	vertex.z += Math.random()*0.05 - 0.025;
+	vertex.copy(source).add((new THREE.Vector3()).copy(direction).multiplyScalar(Math.random()*3));
+	vertex.x += Math.random()*0.1 - 0.05;
+	vertex.y += Math.random()*0.1 - 0.05;
+	vertex.z += Math.random()*0.1 - 0.05;
 
 	cloud.vertices.push(vertex);
     }
@@ -127,7 +129,7 @@ Interface.createFire = function(source, destination, local) {
 	size: 0.01,
 	color: 0x00A0A0,
 	transparent: true,
-	opacity: 0.8,
+	opacity: 0.91,
     });
 
     var particles = new THREE.ParticleSystem( cloud, cloudMaterial );
@@ -135,7 +137,7 @@ Interface.createFire = function(source, destination, local) {
     Game.scene.add(particles);
 
     if (local)
-	Network.socket.emit('createFire', {id:Game.player.ID, source:source, destination:destination});
+	Network.socket.emit('createFire', {id:Game.player.ID, destination:destination});
 
     var fade = setInterval( function() {
 	THREE.ColorConverter.setHSV( particles.material.color,

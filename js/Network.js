@@ -78,7 +78,6 @@ Network.setup = function() {
     });
 
     Network.socket.on('playerDied', function(data) {
-	//console.log(Game.otherPlayers[data].name || Game.player.name, "died");
 	if (Game.otherPlayers[data.destination])
 	    Game.otherPlayers[data.destination].despawn();
 	else if (data.destination == Game.player.ID) {
@@ -95,8 +94,7 @@ Network.setup = function() {
     });
 
     Network.socket.on('createFire', function(data) {
-        Game.otherPlayers[data.id].emitSound(Sound.buffers["laser"]);
-	Interface.createFire(data.source, data.destination, false);
+	Interface.createFire(Game.otherPlayers[data.id], data.destination, false);
     });
 
 

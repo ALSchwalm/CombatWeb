@@ -18,6 +18,7 @@ Sound.setup = function() {
 
     Sound.buffers = {};
     Sound.loadSound("laser", "assets/laser.wav");
+    Sound.loadSound("recharge", "assets/recharge.wav");
 }
 
 Sound.loadBuffer = function(soundFileName, callback) {

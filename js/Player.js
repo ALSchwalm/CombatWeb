@@ -41,18 +41,32 @@ Player.prototype.despawn = function() {
     this.live = false;
 }
 
-Player.prototype.emitSound = function(buffer) {
+Player.prototype.emitSound = function(buffer, sticky) {
     //Each player has a panner node to emit sounds
-    this.sound = {};
-    this.sound.source = Sound.audio.context.createBufferSource();
-    this.sound.source.loop = false;
-    this.sound.panner = Sound.audio.context.createPanner();
-    this.sound.source.connect(this.sound.panner);
-    this.sound.panner.connect(Sound.audio.destination);
+    var sound = {};
+    sound.source = Sound.audio.context.createBufferSource();
+    sound.source.loop = false;
+    sound.panner = Sound.audio.context.createPanner();
+    sound.source.connect(sound.panner);
+    sound.panner.connect(Sound.audio.destination);
 
     var pos = this.body.position;
-    this.sound.panner.setPosition(pos.x, pos.y, pos.z);
+    sound.panner.setPosition(pos.x, pos.y, pos.z);
 
-    this.sound.source.buffer = buffer;
-    this.sound.source.start(0);
+    sound.source.buffer = buffer;
+    sound.source.start(0);
+
+    if (sticky) {
+        var start = +new Date;
+        var self = this;
+        var timer = setInterval(function() {
+            var pos = self.body.position;
+            sound.panner.setPosition(pos.x, pos.y, pos.z);
+            if (+new Date - start > 1000) { //TODO get sound length from buffer
+                clearInterval(timer);
+            }
+        }, 50);
+    }
+
+    return sound;
 }
