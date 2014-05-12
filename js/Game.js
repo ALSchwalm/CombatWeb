@@ -29,7 +29,6 @@ Game.setupPhysics = function(){
 
     Game.world.solver = new CANNON.SplitSolver(solver);
 
-    // Create a slippery material (friction coefficient = 0.0)
     defaultMaterial = new CANNON.Material("defaultMaterial");
     var physicsContactMaterial = new CANNON.ContactMaterial(defaultMaterial,
 							    defaultMaterial,
@@ -113,6 +112,23 @@ Game.setupRender = function() {
 
     Game.shaders["fxaaEffect"] = fxaaEffect;
     Game.composer.addPass( fxaaEffect );
+
+    // Skybox adapted from https://mrdoob.github.io/three.js/examples/webgl_lights_hemisphere.html
+    var vertexShader = document.getElementById( 'skyVertexShader' ).textContent;
+    var fragmentShader = document.getElementById( 'skyFragmentShader' ).textContent;
+    var uniforms = {
+	topColor: 	 { type: "c", value: new THREE.Color( 0x0077ff ) },
+	bottomColor: { type: "c", value: new THREE.Color( 0xffffff ) },
+	offset:		 { type: "f", value: 33 },
+	exponent:	 { type: "f", value: 0.6 }
+    }
+    Game.scene.fog.color.copy( uniforms.bottomColor.value );
+
+    var skyGeo = new THREE.SphereGeometry( 300, 32, 15 );
+    var skyMat = new THREE.ShaderMaterial( { vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms, side: THREE.BackSide } );
+
+    var sky = new THREE.Mesh( skyGeo, skyMat );
+    Game.scene.add( sky );
 
 }
 

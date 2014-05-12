@@ -41,7 +41,7 @@ Player.prototype.despawn = function() {
     this.live = false;
 }
 
-Player.prototype.emitSound = function(buffer, sticky) {
+Player.prototype.emitSound = function(buffer, sticky, distanceModel, rolloffFactor) {
     //Each player has a panner node to emit sounds
     var sound = {};
     sound.source = Sound.audio.context.createBufferSource();
@@ -49,6 +49,9 @@ Player.prototype.emitSound = function(buffer, sticky) {
     sound.panner = Sound.audio.context.createPanner();
     sound.source.connect(sound.panner);
     sound.panner.connect(Sound.audio.destination);
+
+    sound.panner.distanceModel = distanceModel || "linear";
+    sound.panner.rolloffFactor = rolloffFactor || 0.4;
 
     var pos = this.body.position;
     sound.panner.setPosition(pos.x, pos.y, pos.z);

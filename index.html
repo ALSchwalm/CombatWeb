@@ -28,7 +28,7 @@
 
     </body>
 
-
+    <!-- Shaders for cube edges -->
     <script id="fragment_shader2" type="x-shader/x-fragment">
      uniform float redWeight;
      uniform float blueWeight;
@@ -45,7 +45,8 @@
          float blue = blueWeight;
          float green = greenWeight;
 
-         if ( (position.x > 0.99 || position.x < 0.01) || (position.y < 0.01 ||  position.y > 0.99) ) {
+         if ( (position.x > 0.99 || position.x < 0.01) ||
+              (position.y < 0.01 ||  position.y > 0.99) ) {
              red = 0.0;
              blue = 0.0;
              green = 0.0;
@@ -64,7 +65,38 @@
          vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
          gl_Position = projectionMatrix * mvPosition;
      }
+    </script>
 
+    <!-- Skybox shaders from https://mrdoob.github.io/three.js/examples/webgl_lights_hemisphere.html -->
+    <script type="x-shader/x-vertex" id="skyVertexShader">
+
+     varying vec3 vWorldPosition;
+
+     void main() {
+
+	 vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+	 vWorldPosition = worldPosition.xyz;
+
+	 gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+     }
+    </script>
+
+    <script type="x-shader/x-fragment" id="skyFragmentShader">
+
+     uniform vec3 topColor;
+     uniform vec3 bottomColor;
+     uniform float offset;
+     uniform float exponent;
+
+     varying vec3 vWorldPosition;
+
+     void main() {
+
+	 float h = normalize( vWorldPosition + offset ).y;
+	 gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( h, exponent ), 0.0 ) ), 1.0 );
+
+     }
     </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
