@@ -49,6 +49,7 @@ Player.prototype.death = function() {
 	self.body.position.set(Game.spawn.x,
 			       Game.spawn.y,
 			       Game.spawn.z)
+        self.body.velocity.set(0, 0, 0);
 	Network.socket.emit('playerSpawn');
     }, 3000);
 }
