@@ -262,8 +262,6 @@ Game.begin = function () {
 	if(Game.projectedStateBuffer.length > 0) {
 	    Game.updateState(Game.projectedStateBuffer[0]);
 	    Game.projectedStateBuffer.splice(0, 1);
-	} else {
-	    console.log("empty buffer");
 	}
 
 	if (Game.player.live) {
@@ -272,6 +270,13 @@ Game.begin = function () {
 
 	    //Update controls
 	    Game.controls.update(Date.now() - time );
+
+            //Fall death
+            if (Game.player.body.position.y < -100) {
+                Game.player.death();
+                Network.socket.emit('playerDied', {reason:" fell to their death",
+                                                   destination:Game.player.ID});
+            }
 	}
 	//Render scene
 	Game.renderer.render( Game.scene, Game.camera );

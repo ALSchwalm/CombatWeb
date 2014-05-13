@@ -47,10 +47,9 @@ Network.setup = function() {
 		if (data.right == Game.player.ID) {
 		    data.message += '<span class="player_name">' + Game.player.name + '</span>';
 		} else {
-		    data.message +=
-		    '<span class="other_player_name">' +
-			Game.otherPlayers[data.right].name +
-			'</span>';
+		    data.message += '<span class="other_player_name">' +
+                                    Game.otherPlayers[data.right].name +
+			            '</span>';
 		}
 	    }
 
@@ -67,12 +66,10 @@ Network.setup = function() {
     });
 
     Network.socket.on('playerConnected', function(data) {
-	console.log(data.name, "connected");
 	Game.otherPlayers[data.id] = new Player(data.id, data.name);
     });
 
     Network.socket.on('playerSpawn', function(data) {
-	console.log(Game.otherPlayers[data].name, "spawned");
 	if (Game.otherPlayers[data])
 	    Game.otherPlayers[data].spawn();
     });
@@ -81,16 +78,8 @@ Network.setup = function() {
 	if (Game.otherPlayers[data.destination])
 	    Game.otherPlayers[data.destination].despawn();
 	else if (data.destination == Game.player.ID) {
-	    Game.player.live = false;
-
-	    setTimeout( function() {
-		Game.player.live = true;
-		Game.player.body.position.set(Game.spawn.x,
-					      Game.spawn.y,
-					      Game.spawn.z)
-		Network.socket.emit('playerSpawn');
-	    }, 3000);
-	}
+            Game.player.death();
+        }
     });
 
     Network.socket.on('createFire', function(data) {
@@ -99,7 +88,6 @@ Network.setup = function() {
 
 
     Network.socket.on('playerDisconnected', function(data) {
-	console.log("received disconnect");
 	if (Game.otherPlayers[data]) {
 	    Game.scene.remove(Game.otherPlayers[data].mesh);
 	    delete Game.otherPlayers[data];
