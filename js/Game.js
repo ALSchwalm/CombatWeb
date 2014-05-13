@@ -41,10 +41,6 @@ Game.setupPhysics = function(){
     Game.player = new Player(Network.socket.socket.sessionid);
     Game.world.add(Game.player.body);
 
-    // Create a plane
-    var groundBody = new CANNON.RigidBody(0,new CANNON.Plane(),defaultMaterial);
-    groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
-    Game.world.add(groundBody);
 }
 
 
@@ -77,20 +73,29 @@ Game.setupRender = function() {
     Game.scene.add( Game.controls.getObject() );
 
     // floor
-    var geometry = new THREE.PlaneGeometry( 300, 300, 50, 50 );
-    geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
-
-    var floorTexture = THREE.ImageUtils.loadTexture('./assets/floor4.gif');
+    var floorTexture = THREE.ImageUtils.loadTexture('./assets/checkerboard.jpg');
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-    floorTexture.repeat.set( 8, 8 );
-
+    floorTexture.repeat.set( 10, 10 );
     var material = new THREE.MeshLambertMaterial(  {map:  floorTexture});
 
-    var mesh = new THREE.Mesh( geometry, material );
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    Game.scene.add( mesh );
+    var halfExtents = new CANNON.Vec3(100,1,100);
+    var boxShape = new CANNON.Box(halfExtents);
+    var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
+    var boxBody = new CANNON.RigidBody(0,boxShape);
+    boxBody.motionstate = 2; //make bodies motionless
+    var boxMesh = new THREE.Mesh( boxGeometry, material);
+    boxBody.position.set(0, -1, 0);
 
+    boxBody.position.copy(boxMesh.position);
+    boxBody.quaternion.copy(boxMesh.quaternion);
+
+    boxMesh.castShadow = true;
+    boxMesh.receiveShadow = true;
+
+    Game.scene.add(boxMesh);
+    Game.world.add(boxBody);
+
+    // renderer
     Game.renderer = new THREE.WebGLRenderer({ antialias: true });
     Game.renderer.shadowMapEnabled = true;
     Game.renderer.shadowMapSoft = true;
@@ -143,7 +148,7 @@ Game.seedWorld = function(seed) {
     for(var i =0; i < worldObjects; i++) {
 	var halfExtents = new CANNON.Vec3(10,10,10);
 	var boxShape = new CANNON.Box(halfExtents);
-	var boxGeometry = new THREE.CubeGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
+	var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
 	var boxBody = new CANNON.RigidBody(0,boxShape);
 	boxBody.motionstate = 2; //make bodies motionless
 
