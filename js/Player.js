@@ -42,7 +42,8 @@ Player.prototype.despawn = function() {
 }
 
 Player.prototype.death = function() {
-   this.live = false;
+    this.emitSound(Sound.buffers["death"]);
+    this.live = false;
     self = this;
     setTimeout( function() {
 	self.live = true;

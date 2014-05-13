@@ -114,7 +114,9 @@
     <script src="js/postprocessing/ShaderPass.js"></script>
     <script src="js/postprocessing/MaskPass.js"></script>
 
+
     <script src="js/PointerLockControls.js"></script>
+    <script src="js/Settings.js"></script>
     <script src="js/Network.js"></script>
     <script src="js/Game.js"></script>
     <script src="js/Interface.js"></script>
@@ -127,10 +129,10 @@
     </audio>
 
     <script>
-     var startTime = 3.0
+     var startTime = Settings.startTimerDuration;
      var count=0;
      var volume = 0;
-     $("#background_music").get(0).volume = 0
+     $("#background_music").get(0).volume = 0;
      var timer = setInterval( counter, 100);
      var fade_music;
 
@@ -159,7 +161,7 @@
              $('#innercircle').css('visibility', 'visible')
              $('#outercircle').css('visibility', 'visible')
              $('#splash').remove();
-             //fade_music= setInterval( fade, 100);
+             fade_music= setInterval( fade, 100);
              Game.begin();
          }
          $("#time").html( parseFloat(Math.round((startTime - count*0.1)*10 )/10).toFixed(1));
@@ -169,8 +171,8 @@
      function fade() {
          volume += 0.01;
          $("#background_music").get(0).volume = volume;
-         if (volume >= 1.0)
-         clearInterval(fade_music);
+         if (volume >= Settings.backgroundVolume)
+             clearInterval(fade_music);
      }
 
      Network.setup();

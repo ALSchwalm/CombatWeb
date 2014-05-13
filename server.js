@@ -46,7 +46,6 @@ io.sockets.on('connection', function (socket) {
     socket.on('playerDied', function(data) {
 	socket.broadcast.emit('playerDied', data); //notify other players of the death
         if (!data.source) {
-            console.log("here");
             io.sockets.emit('message', {
                 source:'server',
                 message: data.reason,
