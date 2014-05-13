@@ -118,14 +118,17 @@ Game.setupRender = function() {
     var fragmentShader = document.getElementById( 'skyFragmentShader' ).textContent;
     var uniforms = {
 	topColor: 	 { type: "c", value: new THREE.Color( 0x0077ff ) },
-	bottomColor: { type: "c", value: new THREE.Color( 0xffffff ) },
+	bottomColor:     { type: "c", value: new THREE.Color( 0xffffff ) },
 	offset:		 { type: "f", value: 33 },
 	exponent:	 { type: "f", value: 0.6 }
     }
     Game.scene.fog.color.copy( uniforms.bottomColor.value );
 
     var skyGeo = new THREE.SphereGeometry( 300, 32, 15 );
-    var skyMat = new THREE.ShaderMaterial( { vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms, side: THREE.BackSide } );
+    var skyMat = new THREE.ShaderMaterial( { vertexShader: vertexShader,
+                                             fragmentShader: fragmentShader,
+                                             uniforms: uniforms,
+                                             side: THREE.BackSide } );
 
     var sky = new THREE.Mesh( skyGeo, skyMat );
     Game.scene.add( sky );

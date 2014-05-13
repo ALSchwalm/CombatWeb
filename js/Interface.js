@@ -110,23 +110,25 @@ Interface.createFire = function(player, destination, local) {
     player.emitSound(Sound.buffers["laser"], true).source.onended = function() {
         player.emitSound(Sound.buffers["recharge"], true);
     };
+
     var source = player.body.position;
     var direction = new THREE.Vector3()
+    var width = 0.1;
     direction.copy(destination).sub(source);
 
     var cloud = new THREE.Geometry();
 
     for(var i =0; i < 2000; i++ ) {
 	var vertex = new THREE.Vector3();
-	vertex.copy(source).add((new THREE.Vector3()).copy(direction).multiplyScalar(Math.random()*3));
-	vertex.x += Math.random()*0.1 - 0.05;
-	vertex.y += Math.random()*0.1 - 0.05;
-	vertex.z += Math.random()*0.1 - 0.05;
+	vertex.copy(source).add((new THREE.Vector3()).copy(direction).multiplyScalar(Math.random()));
+	vertex.x += Math.random()*width - width/2;
+	vertex.y += Math.random()*width - width/2;
+	vertex.z += Math.random()*width - width/2;
 
 	cloud.vertices.push(vertex);
     }
     var cloudMaterial = new THREE.ParticleBasicMaterial( {
-	size: 0.01,
+	size: 0.03,
 	color: 0x00A0A0,
 	transparent: true,
 	opacity: 0.91,
@@ -145,6 +147,14 @@ Interface.createFire = function(player, destination, local) {
 			             THREE.ColorConverter.getHSV(particles.material.color).s,
 			             THREE.ColorConverter.getHSV(particles.material.color).v - 0.005);
 	particles.material.opacity -= 0.02
+
+        for (var i=0; i < cloud.vertices.length; i++) {
+            cloud.vertices[i].x += Math.random()*width/2 - width/4;
+            cloud.vertices[i].y += Math.random()*width/2 - width/4;
+            cloud.vertices[i].z += Math.random()*width/2 - width/4;
+        }
+        particles.geometry.verticesNeedUpdate = true;
+
     }, 10);
 
     setTimeout( function(){
