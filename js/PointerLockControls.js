@@ -3,20 +3,13 @@
  * @author schteppe / https://github.com/schteppe
  */
 var PointerLockControls = function ( camera, cannonBody ) {
-
-    var eyeYPos = 2; // eyes are 2 meters above the ground
-    var velocityFactor = 0.4;
-    var jumpVelocity = 20;
-    var friction = 0.2;
-    var airControlFactor = 0.3;
-    var maxVelocity = 30;
     var scope = this;
 
     var pitchObject = new THREE.Object3D();
     pitchObject.add( camera );
 
     var yawObject = new THREE.Object3D();
-    yawObject.position.y = 2;
+    yawObject.position.y = Settings.playerEyePosition;
     yawObject.add( pitchObject );
 
     var quat = new THREE.Quaternion();
@@ -48,7 +41,7 @@ var PointerLockControls = function ( camera, cannonBody ) {
     var velocity = cannonBody.velocity;
 
     var PI_2 = Math.PI / 2;
-    
+
     var onMouseMove = function ( event ) {
 
         if ( scope.enabled === false ) return;
@@ -87,11 +80,11 @@ var PointerLockControls = function ( camera, cannonBody ) {
 
         case 32: // space
             if ( canJump === true ){
-                velocity.y = jumpVelocity;
+                velocity.y = Settings.playerJumpVelocity;
             }
             canJump = false;
             break;
-	    
+
 	case 84: // t
 	    $('#chat_input').focus();
 	    event.preventDefault(); //Stop the 't' press from being set to the textbox
@@ -147,51 +140,51 @@ var PointerLockControls = function ( camera, cannonBody ) {
     var inputVelocity = new THREE.Vector3();
     this.update = function ( delta ) {
         delta *= 0.5;
-	
+
         inputVelocity.set(0,0,0);
 
         if ( moveForward){
-	    inputVelocity.z = -velocityFactor * delta;
+	    inputVelocity.z = -Settings.playerVelocityFactor * delta;
 	    if (!canJump)
-		inputVelocity.z *= airControlFactor;
+		inputVelocity.z *= Settings.playerAirControlFactor;
         }
-	
+
         if ( moveBackward){
-            inputVelocity.z = velocityFactor * delta;
+            inputVelocity.z = Settings.playerVelocityFactor * delta;
 	    if (!canJump)
-		inputVelocity.z *= airControlFactor;
+		inputVelocity.z *= Settings.playerAirControlFactor;
         }
 
         if ( moveLeft){
-            inputVelocity.x = -velocityFactor * delta;
+            inputVelocity.x = -Settings.playerVelocityFactor * delta;
 	    if (!canJump)
-		inputVelocity.x *= airControlFactor;
+		inputVelocity.x *= Settings.playerAirControlFactor;
         }
-	
+
         if ( moveRight){
-            inputVelocity.x = velocityFactor * delta;
+            inputVelocity.x = Settings.playerVelocityFactor * delta;
 	    if (!canJump)
-		inputVelocity.x *= airControlFactor;
+		inputVelocity.x *= Settings.playerAirControlFactor;
         }
-	
+
 	if (canJump) {
-	    velocity.x *= 0.9;
-	    velocity.z *= 0.9;
+	    velocity.x *= Settings.playerFriction;
+	    velocity.z *= Settings.playerFriction;
 	}
 
         // Convert velocity to world coordinates
         quat.setFromEuler(new THREE.Euler(pitchObject.rotation.x, yawObject.rotation.y, 0, "XYZ"));
         inputVelocity.applyQuaternion(quat);
-	
-	if ( Utils.vectMag( {x: velocity.x + inputVelocity.x, 
-			     y: velocity.y + inputVelocity.y, 
-			     z: velocity.z}) < maxVelocity) {
-	    
+
+	if ( Utils.vectMag( {x: velocity.x + inputVelocity.x,
+			     y: velocity.y + inputVelocity.y,
+			     z: velocity.z}) < Settings.playerMaxVelocity) {
+
 	    // Add to the object
 	    velocity.x += inputVelocity.x;
 	    velocity.z += inputVelocity.z;
 	}
-	
+
         cannonBody.position.copy(yawObject.position);
     };
 };

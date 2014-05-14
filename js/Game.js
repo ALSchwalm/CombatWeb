@@ -1,7 +1,5 @@
 
 Game = {};
-
-Game.FPS = 60;
 Game.spawn = {x:0, y:100, z:0};
 
 Game.player = null;
@@ -218,7 +216,7 @@ Game.interpolate = function(newState) {
     var oldState = Game.currentState;
 
 
-    Game.interpConst = (Network.latency+50)/(1000/Game.FPS);
+    Game.interpConst = (Network.latency+50)/(1000/Settings.FPS);
 
     for(var i=0; i < Game.interpConst; i++) {
 	var interpState = {players:{}};
@@ -266,7 +264,7 @@ Game.begin = function () {
 
 	if (Game.player.live) {
 	    //Update physics
-	    Game.world.step(1/60);
+	    Game.world.step(1/Settings.FPS);
 
 	    //Update controls
 	    Game.controls.update(Date.now() - time );

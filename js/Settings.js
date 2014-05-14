@@ -14,5 +14,13 @@ Settings = {
     physicsSolverIterations: 7,
     physicsSolverTolerance: 0.1,
     fireKnockback: 60000,
-    startTimerDuration: 3.0
+    startTimerDuration: 3.0,
+    FPS: 60,
+
+    playerJumpVelocity: 20,
+    playerFriction: 0.9,
+    playerAirControlFactor: 0.3,
+    playerMaxVelocity: 30,
+    playerVelocityFactor: 0.4,
+    playerEyePosition: 2
 };
