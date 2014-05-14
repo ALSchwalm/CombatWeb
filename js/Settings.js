@@ -22,5 +22,7 @@ Settings = {
     playerAirControlFactor: 0.3,
     playerMaxVelocity: 30,
     playerVelocityFactor: 0.4,
-    playerEyePosition: 2
+    playerEyePosition: 2,
+
+    messageTimeout: 10000
 };

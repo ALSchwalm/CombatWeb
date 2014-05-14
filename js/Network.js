@@ -59,6 +59,11 @@ Network.setup = function() {
 
 	$('#chat_text_paragraph').append('<span class="message">' + data.source + data.message + '<br></span>');
 
+        var thisMessage = $('.message:last');
+        setTimeout(function() {
+            thisMessage.remove();
+        }, Settings.messageTimeout);
+
 	if ($('.message').length > 10) { //only allow ten messages at a time
 	    $('.message:first').remove();
 	}
