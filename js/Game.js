@@ -196,7 +196,11 @@ Game.updateState = function(newState) {
 		Game.otherPlayers[playerID].setState(newState.players[playerID]);
 		Game.otherPlayers[playerID].spawn();
 	    }
-	}
+	} else {
+            // Defer to the server for K/D
+            Game.player.kills = newState.players[playerID].kills;
+            Game.player.deaths = newState.players[playerID].deaths;
+        }
     }
 
     for(var playerID in Game.otherPlayers) {

@@ -2,6 +2,8 @@
 function Player(_ID, name) {
     this.ID = _ID;
     this.name = name;
+    this.kills = 0;
+    this.deaths = 0;
 
     // Create a sphere
     var mass = 50, radius = 1.3;
@@ -21,13 +23,15 @@ Player.prototype.setState = function(state) {
     this.body.position = new CANNON.Vec3(state.position.x, state.position.y, state.position.z);
     this.mesh.position = state.position;
     this.live = state.live;
+    this.kills = state.kills;
+    this.deaths = state.deaths;
 }
 
 Player.prototype.getState = function() {
     var state = {};
     state.position = this.body.position;
     state.live = this.live;
-    state.name = this.name
+    state.name = this.name;
     return state;
 }
 

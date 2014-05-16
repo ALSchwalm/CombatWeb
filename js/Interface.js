@@ -106,6 +106,16 @@ Interface.setup = function() {
 
 }
 
+Interface.showScoreboard = function() {
+    $('#innercircle').css('visibility', 'hidden')
+    $('#outercircle').css('visibility', 'hidden')
+}
+
+Interface.hideScoreboard = function() {
+    $('#innercircle').css('visibility', 'visible')
+    $('#outercircle').css('visibility', 'visible')
+}
+
 Interface.createFire = function(player, destination, local) {
     player.emitSound(Sound.buffers["laser"], true).source.onended = function() {
         player.emitSound(Sound.buffers["recharge"], true);

@@ -91,13 +91,16 @@ var PointerLockControls = function ( camera, cannonBody ) {
             }
             canJump = false;
             break;
+
+        case 9: // tab
+            Interface.showScoreboard();
+            break;
 	    
 	case 84: // t
 	    $('#chat_input').focus();
-	    event.preventDefault(); //Stop the 't' press from being set to the textbox
 	    break;
         }
-
+        event.preventDefault();
     };
 
     var onKeyUp = function ( event ) {
@@ -124,8 +127,11 @@ var PointerLockControls = function ( camera, cannonBody ) {
             moveRight = false;
             break;
 
+        case 9: // tab
+            Interface.hideScoreboard();
+            break;
         }
-
+        event.preventDefault();
     };
 
     document.addEventListener( 'mousemove', onMouseMove, false );
@@ -195,3 +201,5 @@ var PointerLockControls = function ( camera, cannonBody ) {
         cannonBody.position.copy(yawObject.position);
     };
 };
+
+
