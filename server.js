@@ -1,7 +1,16 @@
 
 var connect = require('connect');
 
-var currentState = {players: {}}
+var DEFAULT_TEAM_ONE = "One";
+var DEFAULT_TEAM_TWO = "Two";
+
+var currentState = {
+    players: {},
+    teams: [
+        {name : DEFAULT_TEAM_ONE, players: []},
+        {name : DEFAULT_TEAM_TWO, players: []}
+    ]
+}
 
 var server = connect.createServer(
     connect.static(__dirname)
@@ -32,6 +41,9 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
 	io.sockets.emit('playerDisconnected', socket.id);
+        var index = currentState.players[socket.id].team.players.indexOf(socket.id);
+        if (index > -1)
+            currentState.players[socket.id].team.players.splice(index, 1);
 	delete currentState.players[socket.id];
     });
 
@@ -61,12 +73,19 @@ io.sockets.on('connection', function (socket) {
     });
 
     var playername = "Player"+Object.keys(currentState.players).length
+    if (currentState.teams[0] > currentState.teams[1]) {
+        var team = currentState.teams[1];
+    } else {
+        var team = currentState.teams[0];
+    }
+    team.players.push(socket.id);
 
     currentState.players[socket.id] = {
 	position : {x: 0, y: 100, z: 0},
 	name: playername,
         deaths: 0,
-        kills: 0
+        kills: 0,
+        team: team
     };
     socket.broadcast.emit("playerConnected", {id:socket.id, name:playername});			//notify other players of the connection
 

@@ -186,23 +186,16 @@ Game.seedWorld = function(seed) {
 }
 
 Game.updateState = function(newState) {
-    Game.currentState = newState;
     for(var playerID in newState.players) {
-	if(playerID != Game.player.ID) {
-	    if (Game.otherPlayers[playerID])
-		Game.otherPlayers[playerID].setState(newState.players[playerID]);
-	    else {
-		Game.otherPlayers[playerID] = new Player(playerID, newState.players[playerID].name); //player appears unexpectedly
-		Game.otherPlayers[playerID].setState(newState.players[playerID]);
-		Game.otherPlayers[playerID].spawn();
-	    }
-	} else {
-            // Defer to the server for K/D
-            if (newState.players[playerID].kills)
-                Game.player.kills = newState.players[playerID].kills;
-            if (newState.players[playerID].deaths)
-                Game.player.deaths = newState.players[playerID].deaths;
-        }
+	if (Game.otherPlayers[playerID])
+	    Game.otherPlayers[playerID].setState(newState.players[playerID]);
+        else if (playerID === Game.player.ID)
+            Game.player.setState(newState.players[playerID]);
+	else {
+	    Game.otherPlayers[playerID] = new Player(playerID, newState.players[playerID].name); //player appears unexpectedly
+	    Game.otherPlayers[playerID].setState(newState.players[playerID]);
+	    Game.otherPlayers[playerID].spawn();
+	}
     }
 
     for(var playerID in Game.otherPlayers) {
@@ -211,7 +204,7 @@ Game.updateState = function(newState) {
 	    delete Game.otherPlayers[playerID];
 	}
     }
-
+    Game.currentState = newState;
 }
 
 Game.interpolate = function(newState) {
@@ -223,28 +216,26 @@ Game.interpolate = function(newState) {
 	Game.currentState = newState;
     var oldState = Game.currentState;
 
-
     Game.interpConst = (Network.latency+50)/(1000/Game.FPS);
 
     for(var i=0; i < Game.interpConst; i++) {
-	var interpState = {players:{}};
+	var interpState = jQuery.extend({}, newState);
 	for(var player in newState.players) {
 	    if (oldState.players[player]) {
-		interpState.players[player] = {
-		    position : { x : Utils.averageValue(oldState.players[player].position.x,
-							newState.players[player].position.x,
-							Game.interpConst,
-							i),
-				 y : Utils.averageValue(oldState.players[player].position.y,
-							newState.players[player].position.y,
-							Game.interpConst,
-							i),
-				 z : Utils.averageValue(oldState.players[player].position.z,
-							newState.players[player].position.z,
-							Game.interpConst,
-							i)
-			       }
-		}
+		interpState.players[player].position = {
+                    x : Utils.averageValue(oldState.players[player].position.x,
+					   newState.players[player].position.x,
+					   Game.interpConst,
+					   i),
+		    y : Utils.averageValue(oldState.players[player].position.y,
+					   newState.players[player].position.y,
+					   Game.interpConst,
+					   i),
+		    z : Utils.averageValue(oldState.players[player].position.z,
+					   newState.players[player].position.z,
+					   Game.interpConst,
+					   i)
+	        }
 	    }
 	    else {
 		interpState.players[player] = newState.players[player];

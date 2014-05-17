@@ -20,11 +20,14 @@ function Player(_ID, name) {
 }
 
 Player.prototype.setState = function(state) {
-    this.body.position = new CANNON.Vec3(state.position.x, state.position.y, state.position.z);
-    this.mesh.position = state.position;
-    this.live = state.live;
+    if (this != Game.player) {
+        this.body.position = new CANNON.Vec3(state.position.x, state.position.y, state.position.z);
+        this.mesh.position = state.position;
+        this.live = state.live;
+    }
     this.kills = state.kills;
     this.deaths = state.deaths;
+    this.team = state.team;
 }
 
 Player.prototype.getState = function() {
