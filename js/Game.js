@@ -198,8 +198,10 @@ Game.updateState = function(newState) {
 	    }
 	} else {
             // Defer to the server for K/D
-            Game.player.kills = newState.players[playerID].kills;
-            Game.player.deaths = newState.players[playerID].deaths;
+            if (newState.players[playerID].kills)
+                Game.player.kills = newState.players[playerID].kills;
+            if (newState.players[playerID].deaths)
+                Game.player.deaths = newState.players[playerID].deaths;
         }
     }
 

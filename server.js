@@ -46,10 +46,10 @@ io.sockets.on('connection', function (socket) {
     socket.on('playerDied', function(data) {
 	socket.broadcast.emit('playerDied', data); //notify other players of the death
 	io.sockets.emit('message', {source:'server', message:" fragged ", left:data.source, right:data.destination});
-        if (data.source && currentState[data.source])
-            currentState[data.source].kills++;
-        if (data.destination && currentState[data.destination])
-            currentState[data.destination].deaths++;
+        if (data.source && currentState.players[data.source])
+            currentState.players[data.source].kills++;
+        if (data.destination && currentState.players[data.destination])
+            currentState.players[data.destination].deaths++;
     });
 
     socket.on('createFire', function(data) {
