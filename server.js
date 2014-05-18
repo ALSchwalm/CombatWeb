@@ -47,30 +47,42 @@ io.sockets.on('connection', function (socket) {
 	delete currentState.players[socket.id];
     });
 
-    socket.on('playerState', function (data) {
-	updateState(socket, data);
-    });
+	socket.on('playerState', function (data) {
+		updateState(socket, data);
+	});
 
-    socket.on('playerSpawn', function() {
-	socket.broadcast.emit('playerSpawn', socket.id);  //notify other players of this players spawn
-    });
+	socket.on('playerSpawn', function() {
+		socket.broadcast.emit('playerSpawn', socket.id);  //notify other players of this players spawn
+	});
 
     socket.on('playerDied', function(data) {
 	socket.broadcast.emit('playerDied', data); //notify other players of the death
-	io.sockets.emit('message', {source:'server', message:" fragged ", left:data.source, right:data.destination});
-        if (data.source && currentState.players[data.source])
-            currentState.players[data.source].kills++;
-        if (data.destination && currentState.players[data.destination])
+        if (!data.source) {
+            io.sockets.emit('message', {
+                source:'server',
+                message: data.reason,
+                left: data.destination
+            });
             currentState.players[data.destination].deaths++;
+        } else {
+	        io.sockets.emit('message', {
+                source:'server',
+                message:" fragged ",
+                left:data.source,
+                right:data.destination
+            });
+            currentState.players[data.source].kills++;
+            currentState.players[data.destination].deaths++;
+        }
     });
 
-    socket.on('createFire', function(data) {
-	socket.broadcast.emit('createFire', data);   //notify other players of the weapons fire
-    });
+	socket.on('createFire', function(data) {
+		socket.broadcast.emit('createFire', data);   //notify other players of the weapons fire
+	});
 
-    socket.on('message', function(data) {
-	io.sockets.emit('message', data);
-    });
+	socket.on('message', function(data) {
+		io.sockets.emit('message', data);
+	});
 
     var playername = "Player"+Object.keys(currentState.players).length
     if (currentState.teams[0] > currentState.teams[1]) {
@@ -89,8 +101,8 @@ io.sockets.on('connection', function (socket) {
     };
     socket.broadcast.emit("playerConnected", {id:socket.id, name:playername});			//notify other players of the connection
 
-    socket.emit("connected", {seed: seed, name:playername, state:currentState}); 	//send current seed to the player
-    io.sockets.emit('message', {source:'server', message:" joined the game", left:socket.id});
+	socket.emit("connected", {seed: seed, name:playername, state:currentState}); 	//send current seed to the player
+	io.sockets.emit('message', {source:'server', message:" joined the game", left:socket.id});
 });
 
 function updateState(socket, data) {
@@ -100,5 +112,5 @@ function updateState(socket, data) {
 }
 
 setInterval( function() {
-    io.sockets.emit('currentState', currentState)
+	io.sockets.emit('currentState', currentState)
 }, 80);

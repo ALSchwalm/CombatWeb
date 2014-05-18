@@ -20,19 +20,19 @@ Game.setupPhysics = function(){
     Game.world.defaultContactMaterial.contactEquationStiffness = 1e9;
     Game.world.defaultContactMaterial.contactEquationRegularizationTime = 3;
 
-    Game.world.gravity.set(0,-40,0);
+    Game.world.gravity.set(0,Settings.gravity,0);
     Game.world.broadphase = new CANNON.NaiveBroadphase();
 
     var solver = new CANNON.GSSolver();
-    solver.iterations = 7;
-    solver.tolerance = 0.1;
+    solver.iterations = Settings.physicsSolverIterations;
+    solver.tolerance = Settings.physicsSolverTolerance;
 
     Game.world.solver = new CANNON.SplitSolver(solver);
 
     defaultMaterial = new CANNON.Material("defaultMaterial");
     var physicsContactMaterial = new CANNON.ContactMaterial(defaultMaterial,
 							    defaultMaterial,
-							    400, // friction coefficient
+							    Settings.frictionCoefficient,
 							    0.3  // restitution
 							   );
     // We must add the contact materials to the world
@@ -50,7 +50,7 @@ Game.setupRender = function() {
     Game.scene = new THREE.Scene();
     Game.scene.fog = new THREE.Fog( 0x000000, 0, 500 );
 
-    var ambient = new THREE.AmbientLight( 0x222222 );
+    var ambient = new THREE.AmbientLight( Settings.ambientLightColor );
     Game.scene.add( ambient );
 
     var light = new THREE.DirectionalLight( 0xffffff );
@@ -78,7 +78,7 @@ Game.setupRender = function() {
     floorTexture.repeat.set( 10, 10 );
     var material = new THREE.MeshLambertMaterial(  {map:  floorTexture});
 
-    var halfExtents = new CANNON.Vec3(100,1,100);
+    var halfExtents = new CANNON.Vec3(Settings.floorSize,1,Settings.floorSize);
     var boxShape = new CANNON.Box(halfExtents);
     var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
     var boxBody = new CANNON.RigidBody(0,boxShape);
@@ -143,10 +143,11 @@ Game.setupRender = function() {
 Game.seedWorld = function(seed) {
     Math.seedrandom(seed);
 
-    var worldObjects = Math.random() * 50 + 2;
+    var worldObjects = Math.random() * Settings.maxCubes + Settings.minCubes;
 
     for(var i =0; i < worldObjects; i++) {
-	var halfExtents = new CANNON.Vec3(10,10,10);
+        var size = Math.random()*Settings.maxCubeSize + Settings.minCubeSize;
+	var halfExtents = new CANNON.Vec3(size, size, size);
 	var boxShape = new CANNON.Box(halfExtents);
 	var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
 	var boxBody = new CANNON.RigidBody(0,boxShape);
@@ -165,9 +166,9 @@ Game.seedWorld = function(seed) {
 	var tempColor = Utils.randomColor();
 	var boxMesh = new THREE.Mesh( boxGeometry, material);
 
-	var randomPosition = {  x : 200*Math.random() - 100,
-				y : 20*Math.random() - 5,
-				z : 200*Math.random() - 100}
+	var randomPosition = {  x : Settings.floorSize*2*Math.random() - Settings.floorSize,
+				y : Settings.maxCubeSize*Math.random(),
+				z : Settings.floorSize*2*Math.random() - Settings.floorSize}
 
 	boxBody.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
 
@@ -186,6 +187,7 @@ Game.seedWorld = function(seed) {
 }
 
 Game.updateState = function(newState) {
+    Game.currentState = newState;
     for(var playerID in newState.players) {
 	if (Game.otherPlayers[playerID])
 	    Game.otherPlayers[playerID].setState(newState.players[playerID]);
@@ -216,7 +218,8 @@ Game.interpolate = function(newState) {
 	Game.currentState = newState;
     var oldState = Game.currentState;
 
-    Game.interpConst = (Network.latency+50)/(1000/Game.FPS);
+
+    Game.interpConst = (Network.latency+50)/(1000/Settings.FPS);
 
     for(var i=0; i < Game.interpConst; i++) {
 	var interpState = jQuery.extend({}, newState);
@@ -259,16 +262,21 @@ Game.begin = function () {
 	if(Game.projectedStateBuffer.length > 0) {
 	    Game.updateState(Game.projectedStateBuffer[0]);
 	    Game.projectedStateBuffer.splice(0, 1);
-	} else {
-	    console.log("empty buffer");
 	}
 
 	if (Game.player.live) {
 	    //Update physics
-	    Game.world.step(1/60);
+	    Game.world.step(1/Settings.FPS);
 
 	    //Update controls
 	    Game.controls.update(Date.now() - time );
+
+            //Fall death
+            if (Game.player.body.position.y < Settings.fallDeathThreshold) {
+                Game.player.death();
+                Network.socket.emit('playerDied', {reason:" fell to their death",
+                                                   destination:Game.player.ID});
+            }
 	}
 	//Render scene
 	Game.renderer.render( Game.scene, Game.camera );
@@ -283,7 +291,7 @@ Game.begin = function () {
     }
     update();
 
-    setInterval(Network.findLatency, 2000);
+    setInterval(Network.findLatency, Settings.latencyUpdateInterval);
 
     setInterval(function() {
 	Network.socket.emit("playerState", Game.player.getState())

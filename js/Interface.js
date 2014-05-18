@@ -55,9 +55,9 @@ Interface.setup = function() {
 					 true);
 		}
 
-		Game.player.body.applyForce(new CANNON.Vec3(-raycaster.ray.direction.x*Game.knockback,
-							    -raycaster.ray.direction.y*Game.knockback,
-							    -raycaster.ray.direction.z*Game.knockback),
+		Game.player.body.applyForce(new CANNON.Vec3(-raycaster.ray.direction.x*Settings.fireKnockback,
+							    -raycaster.ray.direction.y*Settings.fireKnockback,
+							    -raycaster.ray.direction.z*Settings.fireKnockback),
 					    Game.player.body.position);
 
 		canFire = false;

@@ -48,6 +48,20 @@ Player.prototype.despawn = function() {
     this.live = false;
 }
 
+Player.prototype.death = function() {
+    this.emitSound(Sound.buffers["death"]);
+    this.live = false;
+    self = this;
+    setTimeout( function() {
+	self.live = true;
+	self.body.position.set(Game.spawn.x,
+			       Game.spawn.y,
+			       Game.spawn.z)
+        self.body.velocity.set(0, 0, 0);
+	Network.socket.emit('playerSpawn');
+    }, 3000);
+}
+
 Player.prototype.emitSound = function(buffer, sticky, distanceModel, rolloffFactor) {
     //Each player has a panner node to emit sounds
     var sound = {};
