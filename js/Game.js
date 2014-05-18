@@ -31,10 +31,10 @@ Game.setupPhysics = function(){
 
     defaultMaterial = new CANNON.Material("defaultMaterial");
     var physicsContactMaterial = new CANNON.ContactMaterial(defaultMaterial,
-							    defaultMaterial,
-							    Settings.frictionCoefficient,
-							    0.3  // restitution
-							   );
+                                                            defaultMaterial,
+                                                            Settings.frictionCoefficient,
+                                                            0.3  // restitution
+                                                           );
     // We must add the contact materials to the world
     Game.world.addContactMaterial(physicsContactMaterial);
 
@@ -122,10 +122,10 @@ Game.setupRender = function() {
     var vertexShader = document.getElementById( 'skyVertexShader' ).textContent;
     var fragmentShader = document.getElementById( 'skyFragmentShader' ).textContent;
     var uniforms = {
-	topColor: 	 { type: "c", value: new THREE.Color( 0x0077ff ) },
-	bottomColor:     { type: "c", value: new THREE.Color( 0xffffff ) },
-	offset:		 { type: "f", value: 33 },
-	exponent:	 { type: "f", value: 0.6 }
+        topColor:        { type: "c", value: new THREE.Color( 0x0077ff ) },
+        bottomColor:     { type: "c", value: new THREE.Color( 0xffffff ) },
+        offset:          { type: "f", value: 33 },
+        exponent:        { type: "f", value: 0.6 }
     }
     Game.scene.fog.color.copy( uniforms.bottomColor.value );
 
@@ -147,64 +147,64 @@ Game.seedWorld = function(seed) {
 
     for(var i =0; i < worldObjects; i++) {
         var size = Math.random()*Settings.maxCubeSize + Settings.minCubeSize;
-	var halfExtents = new CANNON.Vec3(size, size, size);
-	var boxShape = new CANNON.Box(halfExtents);
-	var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
-	var boxBody = new CANNON.RigidBody(0,boxShape);
-	boxBody.motionstate = 2; //make bodies motionless
+        var halfExtents = new CANNON.Vec3(size, size, size);
+        var boxShape = new CANNON.Box(halfExtents);
+        var boxGeometry = new THREE.BoxGeometry(halfExtents.x*2,halfExtents.y*2,halfExtents.z*2);
+        var boxBody = new CANNON.RigidBody(0,boxShape);
+        boxBody.motionstate = 2; //make bodies motionless
 
-	var material = new THREE.ShaderMaterial( {
-	    uniforms:  {
-		redWeight: 	{ type: "f", value: Math.random() },
-		blueWeight:	{ type: "f", value: Math.random() },
-		greenWeight:{ type: "f", value: Math.random() }
-	    },
-	    vertexShader: document.getElementById( 'vertexShader' ).textContent,
-	    fragmentShader: document.getElementById( 'fragment_shader2' ).textContent
-	});
+        var material = new THREE.ShaderMaterial( {
+            uniforms:  {
+                redWeight:   { type: "f", value: Math.random() },
+                blueWeight:  { type: "f", value: Math.random() },
+                greenWeight: { type: "f", value: Math.random() }
+            },
+            vertexShader: document.getElementById( 'vertexShader' ).textContent,
+            fragmentShader: document.getElementById( 'fragment_shader2' ).textContent
+        });
 
-	var tempColor = Utils.randomColor();
-	var boxMesh = new THREE.Mesh( boxGeometry, material);
+        var tempColor = Utils.randomColor();
+        var boxMesh = new THREE.Mesh( boxGeometry, material);
 
-	var randomPosition = {  x : Settings.floorSize*2*Math.random() - Settings.floorSize,
-				y : Settings.maxCubeSize*Math.random(),
-				z : Settings.floorSize*2*Math.random() - Settings.floorSize}
+        var randomPosition = {  x : Settings.floorSize*2*Math.random() - Settings.floorSize,
+                                y : Settings.maxCubeSize*Math.random(),
+                                z : Settings.floorSize*2*Math.random() - Settings.floorSize}
 
-	boxBody.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
+        boxBody.position.set(randomPosition.x, randomPosition.y, randomPosition.z);
 
-	boxBody.quaternion.setFromVectors(new CANNON.Vec3(Math.random(), Math.random(), Math.random()),
-					  new CANNON.Vec3(Math.random(), Math.random(), Math.random()));
+        boxBody.quaternion.setFromVectors(new CANNON.Vec3(Math.random(), Math.random(), Math.random()),
+                                          new CANNON.Vec3(Math.random(), Math.random(), Math.random()));
 
-	boxBody.position.copy(boxMesh.position);
-	boxBody.quaternion.copy(boxMesh.quaternion);
+        boxBody.position.copy(boxMesh.position);
+        boxBody.quaternion.copy(boxMesh.quaternion);
 
-	boxMesh.castShadow = true;
-	boxMesh.receiveShadow = true;
+        boxMesh.castShadow = true;
+        boxMesh.receiveShadow = true;
 
-	Game.scene.add(boxMesh);
-	Game.world.add(boxBody);
+        Game.scene.add(boxMesh);
+        Game.world.add(boxBody);
     }
 }
 
 Game.updateState = function(newState) {
     Game.currentState = newState;
     for(var playerID in newState.players) {
-	if (Game.otherPlayers[playerID])
-	    Game.otherPlayers[playerID].setState(newState.players[playerID]);
+        if (Game.otherPlayers[playerID])
+            Game.otherPlayers[playerID].setState(newState.players[playerID]);
         else if (playerID === Game.player.ID)
             Game.player.setState(newState.players[playerID]);
-	else {
-	    Game.otherPlayers[playerID] = new Player(playerID, newState.players[playerID].name); //player appears unexpectedly
-	    Game.otherPlayers[playerID].setState(newState.players[playerID]);
-	    Game.otherPlayers[playerID].spawn();
-	}
+        else {
+            Game.otherPlayers[playerID] = new Player(playerID, newState.players[playerID].name); //player appears unexpectedly
+            Game.otherPlayers[playerID].setState(newState.players[playerID]);
+            Game.otherPlayers[playerID].spawn();
+        }
     }
 
     for(var playerID in Game.otherPlayers) {
-	if (!newState.players[playerID]) {
-	    Game.scene.remove(Game.otherPlayers[playerID].mesh);
-	    delete Game.otherPlayers[playerID];
-	}
+        if (!newState.players[playerID]) {
+            Game.scene.remove(Game.otherPlayers[playerID].mesh);
+            delete Game.otherPlayers[playerID];
+        }
     }
     Game.currentState = newState;
 }
@@ -215,37 +215,37 @@ Game.interpolate = function(newState) {
     Game.projectedStateBuffer = [];
 
     if (!Game.currentState)
-	Game.currentState = newState;
+        Game.currentState = newState;
     var oldState = Game.currentState;
 
 
     Game.interpConst = (Network.latency+50)/(1000/Settings.FPS);
 
     for(var i=0; i < Game.interpConst; i++) {
-	var interpState = jQuery.extend({}, newState);
-	for(var player in newState.players) {
-	    if (oldState.players[player]) {
-		interpState.players[player].position = {
+        var interpState = jQuery.extend({}, newState);
+        for(var player in newState.players) {
+            if (oldState.players[player]) {
+                interpState.players[player].position = {
                     x : Utils.averageValue(oldState.players[player].position.x,
-					   newState.players[player].position.x,
-					   Game.interpConst,
-					   i),
-		    y : Utils.averageValue(oldState.players[player].position.y,
-					   newState.players[player].position.y,
-					   Game.interpConst,
-					   i),
-		    z : Utils.averageValue(oldState.players[player].position.z,
-					   newState.players[player].position.z,
-					   Game.interpConst,
-					   i)
-	        }
-	    }
-	    else {
-		interpState.players[player] = newState.players[player];
-	    }
-	}
+                                           newState.players[player].position.x,
+                                           Game.interpConst,
+                                           i),
+                    y : Utils.averageValue(oldState.players[player].position.y,
+                                           newState.players[player].position.y,
+                                           Game.interpConst,
+                                           i),
+                    z : Utils.averageValue(oldState.players[player].position.z,
+                                           newState.players[player].position.z,
+                                           Game.interpConst,
+                                           i)
+                }
+            }
+            else {
+                interpState.players[player] = newState.players[player];
+            }
+        }
 
-	Game.projectedStateBuffer.push(interpState);
+        Game.projectedStateBuffer.push(interpState);
     }
     Game.projectedStateBuffer.push(newState);
 }
@@ -259,17 +259,17 @@ Game.begin = function () {
 
     var time = Date.now();
     function update() {
-	if(Game.projectedStateBuffer.length > 0) {
-	    Game.updateState(Game.projectedStateBuffer[0]);
-	    Game.projectedStateBuffer.splice(0, 1);
-	}
+        if(Game.projectedStateBuffer.length > 0) {
+            Game.updateState(Game.projectedStateBuffer[0]);
+            Game.projectedStateBuffer.splice(0, 1);
+        }
 
-	if (Game.player.live) {
-	    //Update physics
-	    Game.world.step(1/Settings.FPS);
+        if (Game.player.live) {
+            //Update physics
+            Game.world.step(1/Settings.FPS);
 
-	    //Update controls
-	    Game.controls.update(Date.now() - time );
+            //Update controls
+            Game.controls.update(Date.now() - time );
 
             //Fall death
             if (Game.player.body.position.y < Settings.fallDeathThreshold) {
@@ -277,23 +277,23 @@ Game.begin = function () {
                 Network.socket.emit('playerDied', {reason:" fell to their death",
                                                    destination:Game.player.ID});
             }
-	}
-	//Render scene
-	Game.renderer.render( Game.scene, Game.camera );
+        }
+        //Render scene
+        Game.renderer.render( Game.scene, Game.camera );
 
-	//Apply postprocessing
-	Game.composer.render(0.05)
+        //Apply postprocessing
+        Game.composer.render(0.05)
 
-	requestAnimationFrame( update );
-	Interface.stats.update();
-	time = Date.now();
-	Sound.updateListenerPosition();
+        requestAnimationFrame( update );
+        Interface.stats.update();
+        time = Date.now();
+        Sound.updateListenerPosition();
     }
     update();
 
     setInterval(Network.findLatency, Settings.latencyUpdateInterval);
 
     setInterval(function() {
-	Network.socket.emit("playerState", Game.player.getState())
+        Network.socket.emit("playerState", Game.player.getState())
     }, 20);
 }

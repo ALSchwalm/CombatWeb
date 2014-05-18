@@ -28,8 +28,8 @@ Sound.loadBuffer = function(soundFileName, callback) {
     request.responseType = "arraybuffer";
     var ctx = Sound.audio.context;
     request.onload = function() {
-	var buffer = ctx.createBuffer(request.response, false);
-	callback(buffer);
+        var buffer = ctx.createBuffer(request.response, false);
+        callback(buffer);
     };
     request.send();
     return request;
@@ -37,7 +37,7 @@ Sound.loadBuffer = function(soundFileName, callback) {
 
 Sound.loadSound = function(name, soundFileName) {
     Sound.loadBuffer(soundFileName, function(buffer){
-	Sound.buffers[name] = buffer;
+        Sound.buffers[name] = buffer;
     });
 }
 

@@ -7,94 +7,94 @@ Interface.setup = function() {
     Interface.SCREEN_HEIGHT = window.innerHeight || 2;
 
     var havePointerLock = 'pointerLockElement' in document ||
-	'mozPointerLockElement' in document ||
-	'webkitPointerLockElement' in document;
+        'mozPointerLockElement' in document ||
+        'webkitPointerLockElement' in document;
 
     if ( havePointerLock ) {
-	var element = document.body;
+        var element = document.body;
 
-	var pointerlockchange = function ( event ) {
-	    if ( document.pointerLockElement === element ||
-		 document.mozPointerLockElement === element ||
-		 document.webkitPointerLockElement === element ) {
-		Game.controls.enabled = true;
-	    } else {
-		Game.controls.enabled = false;
-	    }
-	}
+        var pointerlockchange = function ( event ) {
+            if ( document.pointerLockElement === element ||
+                 document.mozPointerLockElement === element ||
+                 document.webkitPointerLockElement === element ) {
+                Game.controls.enabled = true;
+            } else {
+                Game.controls.enabled = false;
+            }
+        }
 
-	// Hook pointer lock state change events
-	document.addEventListener( 'pointerlockchange', pointerlockchange, false );
-	document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
-	document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
-	window.addEventListener( 'resize', Interface.onWindowResize, false );
+        // Hook pointer lock state change events
+        document.addEventListener( 'pointerlockchange', pointerlockchange, false );
+        document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
+        document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
+        window.addEventListener( 'resize', Interface.onWindowResize, false );
 
-	var canFire = true;
-	var onMouseDown = function( event ) {
-	    if (canFire && Game.player.live) {
-		var projector = new THREE.Projector();
-		var vector = new THREE.Vector3(0,0,1);
-		projector.unprojectVector(vector, Game.camera);
-		var raycaster = new THREE.Raycaster(Game.player.body.position, vector.sub(Game.player.body.position).normalize() );
+        var canFire = true;
+        var onMouseDown = function( event ) {
+            if (canFire && Game.player.live) {
+                var projector = new THREE.Projector();
+                var vector = new THREE.Vector3(0,0,1);
+                projector.unprojectVector(vector, Game.camera);
+                var raycaster = new THREE.Raycaster(Game.player.body.position, vector.sub(Game.player.body.position).normalize() );
 
-		var intersects = raycaster.intersectObjects( Game.scene.children );
+                var intersects = raycaster.intersectObjects( Game.scene.children );
 
-		if (intersects[0] && intersects[0].point) {
-		    Interface.createFire(Game.player, intersects[0].point, true);
+                if (intersects[0] && intersects[0].point) {
+                    Interface.createFire(Game.player, intersects[0].point, true);
 
-		    for (playerID in Game.otherPlayers) {
-			if (intersects[0].object == Game.otherPlayers[playerID].mesh) {
-			    Network.socket.emit('playerDied', {source:Game.player.ID, destination:playerID});
-			    Game.otherPlayers[playerID].despawn();
-			}
-		    }
-		}
-		else {
-		    Interface.createFire(Game.player,
-					 raycaster.ray.origin.vadd((new THREE.Vector3()).copy(raycaster.ray.direction).multiplyScalar(100)),
-					 true);
-		}
+                    for (playerID in Game.otherPlayers) {
+                        if (intersects[0].object == Game.otherPlayers[playerID].mesh) {
+                            Network.socket.emit('playerDied', {source:Game.player.ID, destination:playerID});
+                            Game.otherPlayers[playerID].despawn();
+                        }
+                    }
+                }
+                else {
+                    Interface.createFire(Game.player,
+                                         raycaster.ray.origin.vadd((new THREE.Vector3()).copy(raycaster.ray.direction).multiplyScalar(100)),
+                                         true);
+                }
 
-		Game.player.body.applyForce(new CANNON.Vec3(-raycaster.ray.direction.x*Settings.fireKnockback,
-							    -raycaster.ray.direction.y*Settings.fireKnockback,
-							    -raycaster.ray.direction.z*Settings.fireKnockback),
-					    Game.player.body.position);
+                Game.player.body.applyForce(new CANNON.Vec3(-raycaster.ray.direction.x*Settings.fireKnockback,
+                                                            -raycaster.ray.direction.y*Settings.fireKnockback,
+                                                            -raycaster.ray.direction.z*Settings.fireKnockback),
+                                            Game.player.body.position);
 
-		canFire = false;
-		setTimeout( function(){canFire = true;}, 1000);
-	    }
-	}
+                canFire = false;
+                setTimeout( function(){canFire = true;}, 1000);
+            }
+        }
 
-	document.addEventListener( 'click', function(event) {
-	    element.requestPointerLock = element.requestPointerLock ||
-		element.mozRequestPointerLock ||
-		element.webkitRequestPointerLock;
+        document.addEventListener( 'click', function(event) {
+            element.requestPointerLock = element.requestPointerLock ||
+                element.mozRequestPointerLock ||
+                element.webkitRequestPointerLock;
 
-	    if ( /Firefox/i.test( navigator.userAgent ) ) {
-		var fullscreenchange = function ( event ) {
+            if ( /Firefox/i.test( navigator.userAgent ) ) {
+                var fullscreenchange = function ( event ) {
 
-		    if ( document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element ) {
+                    if ( document.fullscreenElement === element || document.mozFullscreenElement === element || document.mozFullScreenElement === element ) {
 
-			document.removeEventListener( 'fullscreenchange', fullscreenchange );
-			document.removeEventListener( 'mozfullscreenchange', fullscreenchange );
+                        document.removeEventListener( 'fullscreenchange', fullscreenchange );
+                        document.removeEventListener( 'mozfullscreenchange', fullscreenchange );
 
-			element.requestPointerLock();
-		    }
-		}
-		document.addEventListener( 'fullscreenchange', fullscreenchange, false );
-		document.addEventListener( 'mozfullscreenchange', fullscreenchange, false );
+                        element.requestPointerLock();
+                    }
+                }
+                document.addEventListener( 'fullscreenchange', fullscreenchange, false );
+                document.addEventListener( 'mozfullscreenchange', fullscreenchange, false );
 
-		element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
+                element.requestFullscreen = element.requestFullscreen || element.mozRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen;
 
-		element.requestFullscreen();
+                element.requestFullscreen();
 
-	    } else {
-		element.requestPointerLock();
-	    }
+            } else {
+                element.requestPointerLock();
+            }
 
-	    onMouseDown();
+            onMouseDown();
 
-	});
+        });
     }
     var container = document.createElement( 'div' );
     document.body.appendChild( container );
@@ -129,19 +129,19 @@ Interface.createFire = function(player, destination, local) {
     var cloud = new THREE.Geometry();
 
     for(var i =0; i < 2000; i++ ) {
-	var vertex = new THREE.Vector3();
-	vertex.copy(source).add((new THREE.Vector3()).copy(direction).multiplyScalar(Math.random()));
-	vertex.x += Math.random()*width - width/2;
-	vertex.y += Math.random()*width - width/2;
-	vertex.z += Math.random()*width - width/2;
+        var vertex = new THREE.Vector3();
+        vertex.copy(source).add((new THREE.Vector3()).copy(direction).multiplyScalar(Math.random()));
+        vertex.x += Math.random()*width - width/2;
+        vertex.y += Math.random()*width - width/2;
+        vertex.z += Math.random()*width - width/2;
 
-	cloud.vertices.push(vertex);
+        cloud.vertices.push(vertex);
     }
     var cloudMaterial = new THREE.ParticleBasicMaterial( {
-	size: 0.03,
-	color: 0x00A0A0,
-	transparent: true,
-	opacity: 0.91,
+        size: 0.03,
+        color: 0x00A0A0,
+        transparent: true,
+        opacity: 0.91,
     });
 
     var particles = new THREE.ParticleSystem( cloud, cloudMaterial );
@@ -149,14 +149,14 @@ Interface.createFire = function(player, destination, local) {
     Game.scene.add(particles);
 
     if (local)
-	Network.socket.emit('createFire', {id:Game.player.ID, destination:destination});
+        Network.socket.emit('createFire', {id:Game.player.ID, destination:destination});
 
     var fade = setInterval( function() {
-	THREE.ColorConverter.setHSV( particles.material.color,
-			             THREE.ColorConverter.getHSV(particles.material.color).h,
-			             THREE.ColorConverter.getHSV(particles.material.color).s,
-			             THREE.ColorConverter.getHSV(particles.material.color).v - 0.005);
-	particles.material.opacity -= 0.02
+        THREE.ColorConverter.setHSV( particles.material.color,
+                                     THREE.ColorConverter.getHSV(particles.material.color).h,
+                                     THREE.ColorConverter.getHSV(particles.material.color).s,
+                                     THREE.ColorConverter.getHSV(particles.material.color).v - 0.005);
+        particles.material.opacity -= 0.02
 
         for (var i=0; i < cloud.vertices.length; i++) {
             cloud.vertices[i].x += Math.random()*width/2 - width/4;
@@ -168,8 +168,8 @@ Interface.createFire = function(player, destination, local) {
     }, 10);
 
     setTimeout( function(){
-	clearInterval(fade);
-	Game.scene.remove(particles);
+        clearInterval(fade);
+        Game.scene.remove(particles);
     }, 700);
 }
 

@@ -56,7 +56,7 @@ var PointerLockControls = function ( camera, cannonBody ) {
     };
 
     var onKeyDown = function ( event ) {
-	if (!scope.enabled) return
+    if (!scope.enabled) return
 
         switch ( event.keyCode ) {
         case 38: // up
@@ -85,16 +85,16 @@ var PointerLockControls = function ( camera, cannonBody ) {
             canJump = false;
             break;
 
-	case 84: // t
-	    $('#chat_input').focus();
-	    event.preventDefault(); //Stop the 't' press from being set to the textbox
-	    break;
+    case 84: // t
+        $('#chat_input').focus();
+        event.preventDefault(); //Stop the 't' press from being set to the textbox
+        break;
         }
 
     };
 
     var onKeyUp = function ( event ) {
-	if (!scope.enabled) return
+    if (!scope.enabled) return
         switch( event.keyCode ) {
 
         case 38: // up
@@ -144,46 +144,46 @@ var PointerLockControls = function ( camera, cannonBody ) {
         inputVelocity.set(0,0,0);
 
         if ( moveForward){
-	    inputVelocity.z = -Settings.playerVelocityFactor * delta;
-	    if (!canJump)
-		inputVelocity.z *= Settings.playerAirControlFactor;
+        inputVelocity.z = -Settings.playerVelocityFactor * delta;
+        if (!canJump)
+        inputVelocity.z *= Settings.playerAirControlFactor;
         }
 
         if ( moveBackward){
             inputVelocity.z = Settings.playerVelocityFactor * delta;
-	    if (!canJump)
-		inputVelocity.z *= Settings.playerAirControlFactor;
+        if (!canJump)
+        inputVelocity.z *= Settings.playerAirControlFactor;
         }
 
         if ( moveLeft){
             inputVelocity.x = -Settings.playerVelocityFactor * delta;
-	    if (!canJump)
-		inputVelocity.x *= Settings.playerAirControlFactor;
+        if (!canJump)
+        inputVelocity.x *= Settings.playerAirControlFactor;
         }
 
         if ( moveRight){
             inputVelocity.x = Settings.playerVelocityFactor * delta;
-	    if (!canJump)
-		inputVelocity.x *= Settings.playerAirControlFactor;
+        if (!canJump)
+        inputVelocity.x *= Settings.playerAirControlFactor;
         }
 
-	if (canJump) {
-	    velocity.x *= Settings.playerFriction;
-	    velocity.z *= Settings.playerFriction;
-	}
+    if (canJump) {
+        velocity.x *= Settings.playerFriction;
+        velocity.z *= Settings.playerFriction;
+    }
 
         // Convert velocity to world coordinates
         quat.setFromEuler(new THREE.Euler(pitchObject.rotation.x, yawObject.rotation.y, 0, "XYZ"));
         inputVelocity.applyQuaternion(quat);
 
-	if ( Utils.vectMag( {x: velocity.x + inputVelocity.x,
-			     y: velocity.y + inputVelocity.y,
-			     z: velocity.z}) < Settings.playerMaxVelocity) {
+    if ( Utils.vectMag( {x: velocity.x + inputVelocity.x,
+                 y: velocity.y + inputVelocity.y,
+                 z: velocity.z}) < Settings.playerMaxVelocity) {
 
-	    // Add to the object
-	    velocity.x += inputVelocity.x;
-	    velocity.z += inputVelocity.z;
-	}
+        // Add to the object
+        velocity.x += inputVelocity.x;
+        velocity.z += inputVelocity.z;
+    }
 
         cannonBody.position.copy(yawObject.position);
     };

@@ -10,7 +10,7 @@ function Player(_ID, name) {
     this.shape = new CANNON.Sphere(radius);
     this.body = new CANNON.RigidBody(mass, this.shape, defaultMaterial);
     this.body.position.set(0,100,0);
-    this.live = false;	//player becomes 'alive' at spawn
+    this.live = false;    //player becomes 'alive' at spawn
 
     this.geometry = new THREE.SphereGeometry(1.3,50,50);
     this.mesh = new THREE.Mesh( this.geometry, new THREE.MeshLambertMaterial( { color: 0xdddddd } ) );
@@ -53,12 +53,12 @@ Player.prototype.death = function() {
     this.live = false;
     self = this;
     setTimeout( function() {
-	self.live = true;
-	self.body.position.set(Game.spawn.x,
-			       Game.spawn.y,
-			       Game.spawn.z)
+        self.live = true;
+        self.body.position.set(Game.spawn.x,
+                               Game.spawn.y,
+                               Game.spawn.z)
         self.body.velocity.set(0, 0, 0);
-	Network.socket.emit('playerSpawn');
+        Network.socket.emit('playerSpawn');
     }, 3000);
 }
 
