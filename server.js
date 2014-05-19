@@ -99,9 +99,9 @@ io.sockets.on('connection', function (socket) {
         kills: 0,
         team: team
     };
-    socket.broadcast.emit("playerConnected", {id:socket.id, name:playername});			//notify other players of the connection
+    socket.broadcast.emit("playerConnected", {id:socket.id, name:playername});	  //notify other players of the connection
 
-    socket.emit("connected", {seed: seed, name:playername, state:currentState}); 	//send current seed to the player
+    socket.emit("connected", {seed: seed, name:playername, state:currentState});  //send current seed to the player
     io.sockets.emit('message', {source:'server', message:" joined the game", left:socket.id});
 });
 
