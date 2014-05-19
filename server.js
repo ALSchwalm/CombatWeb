@@ -7,8 +7,8 @@ var DEFAULT_TEAM_TWO = "Two";
 var currentState = {
     players: {},
     teams: [
-        {name : DEFAULT_TEAM_ONE, players: []},
-        {name : DEFAULT_TEAM_TWO, players: []}
+        {name : DEFAULT_TEAM_ONE, players: [], color: 0xDD1111},
+        {name : DEFAULT_TEAM_TWO, players: [], color: 0x1111DD}
     ]
 }
 
@@ -85,7 +85,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     var playername = "Player"+Object.keys(currentState.players).length
-    if (currentState.teams[0] > currentState.teams[1]) {
+    if (currentState.teams[0].players.length > currentState.teams[1].players.length) {
         var team = currentState.teams[1];
     } else {
         var team = currentState.teams[0];

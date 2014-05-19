@@ -6,7 +6,7 @@ Settings = {
     minCubes: 5,
     maxCubeSize: 7,
     minCubeSize: 4,
-    backgroundVolume: 0.4,
+    backgroundVolume: 0, //.4,
     fallDeathThreshold: -100,
     latencyUpdateInterval: 2000,
     floorSize: 100,
@@ -24,5 +24,7 @@ Settings = {
     playerVelocityFactor: 0.4,
     playerEyePosition: 2,
 
-    messageTimeout: 10000
+    messageTimeout: 10000,
+
+    respawnTime: 3000
 };

@@ -1,8 +1,6 @@
 
 Game = {};
 
-Game.FPS = 60;
-Game.knockback = 60000; //Move to controls?
 Game.spawn = {x:0, y:100, z:0};
 
 Game.player = null;

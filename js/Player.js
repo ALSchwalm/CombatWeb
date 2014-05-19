@@ -13,7 +13,8 @@ function Player(_ID, name) {
     this.live = false;    //player becomes 'alive' at spawn
 
     this.geometry = new THREE.SphereGeometry(1.3,50,50);
-    this.mesh = new THREE.Mesh( this.geometry, new THREE.MeshLambertMaterial( { color: 0xdddddd } ) );
+    this.material = new THREE.MeshLambertMaterial( { color: 0xdddddd } );
+    this.mesh = new THREE.Mesh( this.geometry, this.material );
 
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
@@ -24,7 +25,12 @@ Player.prototype.setState = function(state) {
         this.body.position = new CANNON.Vec3(state.position.x, state.position.y, state.position.z);
         this.mesh.position = state.position;
         this.live = state.live;
+
+        if (this.team != state.team) {
+            this.material.color = new THREE.Color( state.team.color );
+        }
     }
+
     this.kills = state.kills;
     this.deaths = state.deaths;
     this.team = state.team;
@@ -59,7 +65,7 @@ Player.prototype.death = function() {
                                Game.spawn.z)
         self.body.velocity.set(0, 0, 0);
         Network.socket.emit('playerSpawn');
-    }, 3000);
+    }, Settings.respawnTime);
 }
 
 Player.prototype.emitSound = function(buffer, sticky, distanceModel, rolloffFactor) {

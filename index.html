@@ -156,7 +156,7 @@
 
      function counter() {
          count++;
-         if (count >= 30) {
+         if (count >= Settings.startTimerDuration*10) {
              clearInterval(timer);
              $('#innercircle').css('visibility', 'visible')
              $('#outercircle').css('visibility', 'visible')
