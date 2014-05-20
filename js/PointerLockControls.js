@@ -19,7 +19,7 @@ var PointerLockControls = function ( camera, cannonBody ) {
     var moveLeft = false;
     var moveRight = false;
 
-    var canJump = false;
+    this.canJump = false;
 
     var contactNormal = new CANNON.Vec3(); // Normal in the contact, pointing *out* of whatever the player touched
     var upAxis = new CANNON.Vec3(0,1,0);
@@ -35,7 +35,7 @@ var PointerLockControls = function ( camera, cannonBody ) {
 
         // If contactNormal.dot(upAxis) is between 0 and 1, we know that the contact normal is somewhat in the up direction.
         if(contactNormal.dot(upAxis) > 0.5) // Use a "good" threshold value between 0 and 1 here!
-            canJump = true;
+            scope.canJump = true;
     });
 
     var velocity = cannonBody.velocity;
@@ -43,8 +43,6 @@ var PointerLockControls = function ( camera, cannonBody ) {
     var PI_2 = Math.PI / 2;
 
     var onMouseMove = function ( event ) {
-
-        if ( scope.enabled === false ) return;
 
         var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
         var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
@@ -79,16 +77,20 @@ var PointerLockControls = function ( camera, cannonBody ) {
             break;
 
         case 32: // space
-            if ( canJump === true ){
+            if ( scope.canJump === true ){
                 velocity.y = Settings.playerJumpVelocity;
             }
-            canJump = false;
+            scope.canJump = false;
             break;
 
 	case 84: // t
 	    $('#chat_input').focus();
 	    event.preventDefault(); //Stop the 't' press from being set to the textbox
 	    break;
+
+        case 16: // shift
+            Game.player.attachGrapple();
+            break;
         }
 
     };
@@ -116,7 +118,9 @@ var PointerLockControls = function ( camera, cannonBody ) {
         case 68: // d
             moveRight = false;
             break;
-
+        case 16: // shift
+            Game.player.detachGrapple();
+            break;
         }
 
     };
@@ -145,29 +149,29 @@ var PointerLockControls = function ( camera, cannonBody ) {
 
         if ( moveForward){
 	    inputVelocity.z = -Settings.playerVelocityFactor * delta;
-	    if (!canJump)
+	    if (!scope.canJump)
 		inputVelocity.z *= Settings.playerAirControlFactor;
         }
 
         if ( moveBackward){
             inputVelocity.z = Settings.playerVelocityFactor * delta;
-	    if (!canJump)
+	    if (!scope.canJump)
 		inputVelocity.z *= Settings.playerAirControlFactor;
         }
 
         if ( moveLeft){
             inputVelocity.x = -Settings.playerVelocityFactor * delta;
-	    if (!canJump)
+	    if (!scope.canJump)
 		inputVelocity.x *= Settings.playerAirControlFactor;
         }
 
         if ( moveRight){
             inputVelocity.x = Settings.playerVelocityFactor * delta;
-	    if (!canJump)
+	    if (!scope.canJump)
 		inputVelocity.x *= Settings.playerAirControlFactor;
         }
 
-	if (canJump) {
+	if (scope.canJump) {
 	    velocity.x *= Settings.playerFriction;
 	    velocity.z *= Settings.playerFriction;
 	}

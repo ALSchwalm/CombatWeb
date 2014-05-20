@@ -24,5 +24,7 @@ Settings = {
     playerVelocityFactor: 0.4,
     playerEyePosition: 2,
 
-    messageTimeout: 10000
+    messageTimeout: 10000,
+    grappleDistance: 10,
+    grappleForce: 100
 };

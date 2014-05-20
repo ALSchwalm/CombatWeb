@@ -1,4 +1,52 @@
 
+makeLocalPlayer = function(ID, name) {
+    if (Game.player) {
+        throw "Local player already exists";
+    }
+
+    var player = new Player(ID, name);
+    player.grappling = false;
+    player.grappleConstraint = null;
+
+    var targetShape = new CANNON.Sphere(0.1);
+    player.grappleTarget = new CANNON.RigidBody(0,targetShape);
+    Game.world.add(player.grappleTarget);
+
+    player.attachGrapple = function() {
+        if (player.grappling) { return false; }
+        player.grappling = true;
+
+        var intersects = Utils.getIntersectsFromPlayer(0, Settings.grappleDistance);
+
+        if (!intersects || (intersects && intersects[0].distance > Settings.grappleDistance)) {
+            player.grappling = false; return false;
+        }
+        player.grappleTarget.shape.radius = 0.1;
+        player.grappleTarget.position = new CANNON.Vec3(intersects[0].point.x,
+                                                        intersects[0].point.y,
+                                                        intersects[0].point.z);
+
+        player.grappleConstraint = new CANNON.DistanceConstraint(player.body,
+                                                                 player.grappleTarget,
+                                                                 0,
+                                                                 Settings.grappleForce);
+        Game.world.addConstraint(player.grappleConstraint);
+        Game.controls.enabled = false;
+
+    }
+
+    player.detachGrapple = function() {
+        if (!player.grappling) { return false; }
+        player.grappling = false;
+        Game.world.removeConstraint(player.grappleConstraint);
+        player.grappleTarget.shape.radius = 0;
+        Game.controls.enabled = true;
+    }
+
+    return player;
+}
+
+
 function Player(_ID, name) {
     this.ID = _ID;
     this.name = name;

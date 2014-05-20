@@ -35,7 +35,7 @@ Game.setupPhysics = function(){
     // We must add the contact materials to the world
     Game.world.addContactMaterial(physicsContactMaterial);
 
-    Game.player = new Player(Network.socket.socket.sessionid);
+    Game.player = makeLocalPlayer(Network.socket.socket.sessionid);
     Game.world.add(Game.player.body);
 
 }
@@ -177,6 +177,8 @@ Game.seedWorld = function(seed) {
 
 	boxMesh.castShadow = true;
 	boxMesh.receiveShadow = true;
+        boxMesh.body = boxBody;
+        boxBody.mesh = boxMesh;
 
 	Game.scene.add(boxMesh);
 	Game.world.add(boxBody);
@@ -248,6 +250,23 @@ Game.interpolate = function(newState) {
     Game.projectedStateBuffer.push(newState);
 }
 
+// Update the local player
+Game.updatePlayer = function(time) {
+    if (Game.player.live) {
+	//Update physics
+	Game.world.step(1/Settings.FPS);
+
+	//Update controls
+	Game.controls.update(Date.now() - time );
+
+        //Fall death
+        if (Game.player.body.position.y < Settings.fallDeathThreshold) {
+            Game.player.death();
+            Network.socket.emit('playerDied', {reason:" fell to their death",
+                                               destination:Game.player.ID});
+        }
+    }
+}
 
 Game.begin = function () {
 
@@ -262,20 +281,8 @@ Game.begin = function () {
 	    Game.projectedStateBuffer.splice(0, 1);
 	}
 
-	if (Game.player.live) {
-	    //Update physics
-	    Game.world.step(1/Settings.FPS);
+        Game.updatePlayer(time);
 
-	    //Update controls
-	    Game.controls.update(Date.now() - time );
-
-            //Fall death
-            if (Game.player.body.position.y < Settings.fallDeathThreshold) {
-                Game.player.death();
-                Network.socket.emit('playerDied', {reason:" fell to their death",
-                                                   destination:Game.player.ID});
-            }
-	}
 	//Render scene
 	Game.renderer.render( Game.scene, Game.camera );
 

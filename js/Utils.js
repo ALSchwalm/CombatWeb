@@ -1,18 +1,15 @@
-
-
 Utils = {};
 
-
 /*
-	Used for interpolation. Find 'slices' intermidiate values between
-	oldValue and newValue and return the 'index'th one.
+  Used for interpolation. Find 'slices' intermidiate values between
+  oldValue and newValue and return the 'index'th one.
 */
 Utils.averageValue = function(oldValue, newValue, slices, index) {
-	var diff = newValue - oldValue;
-	var diff = diff / slices;
-	if (index >= slices) return newValue;
-	
-	return oldValue + diff * (index+1);
+    var diff = newValue - oldValue;
+    var diff = diff / slices;
+    if (index >= slices) return newValue;
+
+    return oldValue + diff * (index+1);
 }
 
 Utils.randomColor = function() {
@@ -35,5 +32,21 @@ Utils.rotateAroundObjectAxis = function(object, axis, radians) {
 }
 
 Utils.vectMag = function(v) {
-	return Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+    return Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+}
+
+Utils.getIntersects = function(position, direction, near, far) {
+    var raycaster = new THREE.Raycaster(position, direction.normalize(), near, far );
+    var intersects = raycaster.intersectObjects( Game.scene.children );
+    return intersects;
+}
+
+Utils.getIntersectsFromPlayer = function(near, far) {
+    var projector = new THREE.Projector();
+    var vector = new THREE.Vector3(0,0,1);
+    projector.unprojectVector(vector, Game.camera);
+    var raycaster = new THREE.Raycaster(Game.player.body.position, vector.sub(Game.player.body.position).normalize() );
+
+    var intersects = raycaster.intersectObjects( Game.scene.children );
+    return intersects;
 }
