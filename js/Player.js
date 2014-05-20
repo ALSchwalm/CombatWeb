@@ -31,7 +31,8 @@ makeLocalPlayer = function(ID, name) {
                                                                  0,
                                                                  Settings.grappleForce);
         Game.world.addConstraint(player.grappleConstraint);
-        Game.controls.enabled = false;
+        Game.controls.canJump = false;
+        Game.world.addEventListener("postStep", player.updateGrapple);
 
     }
 
@@ -40,7 +41,13 @@ makeLocalPlayer = function(ID, name) {
         player.grappling = false;
         Game.world.removeConstraint(player.grappleConstraint);
         player.grappleTarget.shape.radius = 0;
-        Game.controls.enabled = true;
+        Game.controls.canJump = true;
+        Game.world.removeEventListener("postStep", player.updateGrapple);
+    }
+
+    player.updateGrapple = function() {
+        if (Utils.vectMag(player.grappleTarget.position.vsub(player.body.position)) > Settings.grappleDistance)
+            player.detachGrapple();
     }
 
     return player;
@@ -124,13 +131,14 @@ Player.prototype.emitSound = function(buffer, sticky, distanceModel, rolloffFact
     if (sticky) {
         var start = +new Date;
         var self = this;
-        var timer = setInterval(function() {
+        var updateSoundPos = function(event) {
             var pos = self.body.position;
             sound.panner.setPosition(pos.x, pos.y, pos.z);
             if (+new Date - start > 1000) { //TODO get sound length from buffer
-                clearInterval(timer);
+                Game.world.removeEventListener("postStep", updateSoundPos);
             }
-        }, 50);
+        }
+        Game.world.addEventListener("postStep", updateSoundPos);
     }
 
     return sound;

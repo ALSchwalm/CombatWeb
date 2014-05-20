@@ -6,7 +6,7 @@ Settings = {
     minCubes: 5,
     maxCubeSize: 7,
     minCubeSize: 4,
-    backgroundVolume: 0.4,
+    backgroundVolume: 0,
     fallDeathThreshold: -100,
     latencyUpdateInterval: 2000,
     floorSize: 100,
