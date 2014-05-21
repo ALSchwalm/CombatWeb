@@ -8,7 +8,7 @@ makeLocalPlayer = function(ID, name) {
     player.grappling = false;
     player.grappleConstraint = null;
 
-    var targetShape = new CANNON.Sphere(0.1);
+    var targetShape = new CANNON.Sphere(0.2);
     player.grappleTarget = new CANNON.RigidBody(0,targetShape);
     Game.world.add(player.grappleTarget);
 
@@ -21,33 +21,39 @@ makeLocalPlayer = function(ID, name) {
         if (!intersects || (intersects && intersects[0].distance > Settings.grappleDistance)) {
             player.grappling = false; return false;
         }
-        player.grappleTarget.shape.radius = 0.1;
-        player.grappleTarget.position = new CANNON.Vec3(intersects[0].point.x,
-                                                        intersects[0].point.y,
-                                                        intersects[0].point.z);
+        player.grappleTarget.shape.radius = 0.2;
+        player.grappleTarget.position = Utils.threeToCannonVec3(intersects[0].point);
 
         player.grappleConstraint = new CANNON.DistanceConstraint(player.body,
                                                                  player.grappleTarget,
                                                                  0,
                                                                  Settings.grappleForce);
         Game.world.addConstraint(player.grappleConstraint);
-        Game.controls.canJump = false;
         Game.world.addEventListener("postStep", player.updateGrapple);
-
+        player.body.addEventListener("collide", player.grappleHooked);
     }
 
     player.detachGrapple = function() {
         if (!player.grappling) { return false; }
         player.grappling = false;
-        Game.world.removeConstraint(player.grappleConstraint);
         player.grappleTarget.shape.radius = 0;
-        Game.controls.canJump = true;
+        Game.world.removeConstraint(player.grappleConstraint);
         Game.world.removeEventListener("postStep", player.updateGrapple);
+        player.body.removeEventListener("collide", player.grappleHooked);
+        player.body.motionstate = 1;
     }
 
     player.updateGrapple = function() {
-        if (Utils.vectMag(player.grappleTarget.position.vsub(player.body.position)) > Settings.grappleDistance)
+        var dist = player.grappleTarget.position.vsub(player.body.position);
+        if (Utils.vectMag(dist) > Settings.grappleDistance)
             player.detachGrapple();
+    }
+
+    player.grappleHooked = function(e) {
+        if (e.with === player.grappleTarget) {
+            player.body.motionstate = 2;
+            player.body.velocity.set(0, 0, 0);
+        }
     }
 
     return player;

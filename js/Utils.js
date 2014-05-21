@@ -31,6 +31,14 @@ Utils.rotateAroundObjectAxis = function(object, axis, radians) {
     object.rotation.setEulerFromRotationMatrix(object.matrix, 1);
 }
 
+Utils.threeToCannonVec3 = function(vector) {
+    return new CANNON.Vec3(vector.x, vector.y, vector.z);
+}
+
+Utils.cannonToThreeVec3 = function(vector) {
+    return new THREE.Vector3(vector.x, vector.y, vector.z);
+}
+
 Utils.vectMag = function(v) {
     return Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
