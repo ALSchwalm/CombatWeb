@@ -18,6 +18,7 @@ var PointerLockControls = function ( camera, cannonBody ) {
     var moveBackward = false;
     var moveLeft = false;
     var moveRight = false;
+    var jump = false; //for bunny-hopping
 
     this.canJump = false;
 
@@ -34,8 +35,13 @@ var PointerLockControls = function ( camera, cannonBody ) {
             contact.ni.copy(contactNormal); // bi is something else. Keep the normal as it is
 
         // If contactNormal.dot(upAxis) is between 0 and 1, we know that the contact normal is somewhat in the up direction.
-        if(contactNormal.dot(upAxis) > 0.5) // Use a "good" threshold value between 0 and 1 here!
+        if(contactNormal.dot(upAxis) > 0.5) {
             scope.canJump = true;
+            if (jump) {
+                velocity.y = Settings.playerJumpVelocity;
+                scope.canJump = false;
+            }
+        }
     });
 
     var velocity = cannonBody.velocity;
@@ -81,6 +87,7 @@ var PointerLockControls = function ( camera, cannonBody ) {
                 velocity.y = Settings.playerJumpVelocity;
             }
             scope.canJump = false;
+            jump = true;
             break;
 
 	case 84: // t
@@ -120,6 +127,10 @@ var PointerLockControls = function ( camera, cannonBody ) {
             break;
         case 16: // shift
             Game.player.detachGrapple();
+            break;
+
+        case 32: // space
+            jump = false;
             break;
         }
 
