@@ -107,13 +107,43 @@ Interface.setup = function() {
 }
 
 Interface.showScoreboard = function() {
-    $('#innercircle').css('visibility', 'hidden')
-    $('#outercircle').css('visibility', 'hidden')
+    $('#innercircle').css('visibility', 'hidden');
+    $('#outercircle').css('visibility', 'hidden');
+    $('#scoreboard').css('visibility', 'visible').empty();
+
+    var players = [];
+
+    for (var id in Game.otherPlayers) {
+        players.push(Game.otherPlayers[id]);
+    }
+    players.push(Game.player);
+
+    players.sort(function(left, right) {
+        return left.kills - right.kills;
+    });
+
+    var teamdivs = {};
+    for(var i in players) {
+        if (!teamdivs[players[i].team.name]) {
+            var div = $('<div>').addClass("teamscore");
+            div.append($("<h3>").html(players[i].team.name));
+            teamdivs[players[i].team.name] = div;
+        }
+        var playerdiv = $('<div>').addClass("playerscore");
+        playerdiv.append($("<span>").addClass("playername").html(players[i].name));
+        playerdiv.append($("<span>").addClass("playerkills").html(players[i].kills));
+        playerdiv.append($("<span>").addClass("playerdeaths").html(players[i].deaths));
+        teamdivs[players[i].team.name].append(playerdiv);
+    }
+    for (var i in teamdivs) {
+        $('#scoreboard').append(teamdivs[i]);
+    }
 }
 
 Interface.hideScoreboard = function() {
-    $('#innercircle').css('visibility', 'visible')
-    $('#outercircle').css('visibility', 'visible')
+    $('#innercircle').css('visibility', 'visible');
+    $('#outercircle').css('visibility', 'visible');
+    $('#scoreboard').css('visibility', 'hidden');
 }
 
 Interface.createFire = function(player, destination, local) {
@@ -122,7 +152,7 @@ Interface.createFire = function(player, destination, local) {
     };
 
     var source = player.body.position;
-    var direction = new THREE.Vector3()
+    var direction = new THREE.Vector3();
     var width = 0.1;
     direction.copy(destination).sub(source);
 

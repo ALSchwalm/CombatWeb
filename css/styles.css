@@ -1,133 +1,176 @@
 html, body {
-	width: 100%;
-	height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 body {
-	background-color: #ffffff;
-	margin: 0;
-	overflow: hidden;
-	font-family: arial;
+    background-color: #ffffff;
+    margin: 0;
+    overflow: hidden;
+    font-family: arial;
 }
 
 #outercircle {
-	position: absolute;
-	margin: auto;
-	top:0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	border-radius: 50%;
-	background:#FFF;
-	width: 4px;
-	height: 4px; 
-	visibility:hidden;
+    position: absolute;
+    margin: auto;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 50%;
+    background:#FFF;
+    width: 4px;
+    height: 4px;
+    visibility:hidden;
 }
 
-#innercircle { 
-	position: absolute;
-	margin: auto;
-	top:0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	border-radius: 50%;
-	background:#000;
-	width: 2px;
-	height: 2px; 
-	visibility:hidden;
+#innercircle {
+    position: absolute;
+    margin: auto;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 50%;
+    background:#000;
+    width: 2px;
+    height: 2px;
+    visibility:hidden;
+}
+
+#scoreboard {
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    margin: auto;
+    width: 80%;
+    height: 80%;
+    background-color:rgba(0, 0, 0, 0.5);
+    visibility:hidden;
+    border-radius: 2%;
+    border: 2px solid;
+}
+
+#scoreboard h3 {
+    color: white;
+}
+
+#scoreboard span {
+    color: white;
+}
+
+.teamscore {
+    padding-left: 5%;
+}
+
+.playerscore {
+    padding-left: 5%;
+}
+
+.playername {
+
+}
+
+.playerkills {
+    padding-left: 5%;
+}
+
+.playerdeaths {
+    padding-left: 5%;
 }
 
 #splash {
 
-	width: 100%;
-	height: 100%;
-	
-	display: -webkit-box;
-	display: -moz-box;
-	display: box;
+    width: 100%;
+    height: 100%;
 
-	-webkit-box-orient: horizontal;
-	-moz-box-orient: horizontal;
-	box-orient: horizontal;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
 
-	-webkit-box-pack: center;
-	-moz-box-pack: center;
-	box-pack: center;
+    -webkit-box-orient: horizontal;
+    -moz-box-orient: horizontal;
+    box-orient: horizontal;
 
-	-webkit-box-align: center;
-	-moz-box-align: center;
-	box-align: center;
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    box-pack: center;
 
-	color: #ffffff;
-	text-align: center;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    box-align: center;
 
-	color: #ffffff;
-	background:#000;
-	text-align: center;
+    color: #ffffff;
+    text-align: center;
+
+    color: #ffffff;
+    background:#000;
+    text-align: center;
 }
 
 #chat_box {
 
-	width: 	30%;
-	height: 30%;
-	
-	position: 	absolute;
-	background:	rgba(200, 54, 54, 0.0);
-	border-radius: 15px;
-	left: 	1%;
-	bottom: 1%;
+    width:     30%;
+    height: 30%;
+
+    position:     absolute;
+    background:    rgba(200, 54, 54, 0.0);
+    border-radius: 15px;
+    left:     1%;
+    bottom: 1%;
 }
 
 #chat_text {
-	position: absolute;
-	color: white;
-	text-shadow:
-		-1px -1px 0 #000,  
-		1px -1px 0 #000,
-		-1px 1px 0 #000,
-		1px 1px 0 #000;
-	left: 2%;
-	bottom: 12px;
-	overflow: hidden
+    position: absolute;
+    color: white;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+    left: 2%;
+    bottom: 12px;
+    overflow: hidden
 }
 
 #chat_input {
-	position: absolute;
-	bottom: 0;
-	background-color: rgba(0,0,0,0.8);
-	border: 1px solid rgba(255, 255, 255, .2);
-	width: 100%;
-	color: white; 
-	-webkit-font-smoothing: antialiased;
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.8);
+    border: 1px solid rgba(255, 255, 255, .2);
+    width: 100%;
+    color: white;
+    -webkit-font-smoothing: antialiased;
 }
 
 .player_name {
-	color: green;
-	font-weight:bold;
-	text-shadow:
-		-1px -1px 0 #000,  
-		1px -1px 0 #000,
-		-1px 1px 0 #000,
-		1px 1px 0 #000;
+    color: green;
+    font-weight:bold;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .other_player_name {
-	color: CornflowerBlue ;
-	font-weight:bold;
-	text-shadow:
-		-1px -1px 0 #000,  
-		1px -1px 0 #000,
-		-1px 1px 0 #000,
-		1px 1px 0 #000;
+    color: CornflowerBlue ;
+    font-weight:bold;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 
 .server_message {
-	color: Tomato  ;
-	font-weight:bold;
-	text-shadow:
-		-1px -1px 0 #000,  
-		1px -1px 0 #000,
-		-1px 1px 0 #000,
-		1px 1px 0 #000;
+    color: Tomato  ;
+    font-weight:bold;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
 }

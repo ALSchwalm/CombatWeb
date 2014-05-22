@@ -85,11 +85,15 @@ var PointerLockControls = function ( camera, cannonBody ) {
             canJump = false;
             break;
 
-    case 84: // t
-        $('#chat_input').focus();
-        event.preventDefault(); //Stop the 't' press from being set to the textbox
-        break;
+        case 84: // t
+            $('#chat_input').focus();
+            break;
+
+        case 9: // tab
+            Interface.showScoreboard();
+            break;
         }
+        event.preventDefault();
 
     };
 
@@ -117,6 +121,9 @@ var PointerLockControls = function ( camera, cannonBody ) {
             moveRight = false;
             break;
 
+        case 9: // tab
+            Interface.hideScoreboard();
+            break;
         }
 
     };
