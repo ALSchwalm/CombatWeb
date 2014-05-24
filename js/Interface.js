@@ -106,6 +106,7 @@ Interface.setup = function() {
 
 }
 
+Interface.scoreboardDisabled = true;
 Interface.showScoreboard = function() {
     $('#innercircle').css('visibility', 'hidden');
     $('#outercircle').css('visibility', 'hidden');

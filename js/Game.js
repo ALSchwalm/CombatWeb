@@ -253,6 +253,7 @@ Game.begin = function () {
 
     Network.socket.emit("playerSpawn", Network.socket.ID);
     Game.player.live = true;
+    Interface.scoreboardDisabled = false;
     Interface.stats.domElement.style.visibility = "visible";
 
     var time = Date.now();

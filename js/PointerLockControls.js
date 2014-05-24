@@ -90,7 +90,8 @@ var PointerLockControls = function ( camera, cannonBody ) {
             break;
 
         case 9: // tab
-            Interface.showScoreboard();
+            if (!Interface.scoreboardDisabled)
+                Interface.showScoreboard();
             break;
         }
         event.preventDefault();
@@ -122,7 +123,8 @@ var PointerLockControls = function ( camera, cannonBody ) {
             break;
 
         case 9: // tab
-            Interface.hideScoreboard();
+            if (!Interface.scoreboardDisabled)
+                Interface.hideScoreboard();
             break;
         }
 

@@ -51,6 +51,7 @@ body {
     visibility:hidden;
     border-radius: 10px;
     border: 2px solid;
+    visibility:hidden;
 }
 
 #scoreboard h3 {
