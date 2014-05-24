@@ -6,7 +6,7 @@ Settings = {
     minCubes: 5,
     maxCubeSize: 7,
     minCubeSize: 4,
-    backgroundVolume: 0, //.4,
+    backgroundVolume: 0.4,
     fallDeathThreshold: -100,
     latencyUpdateInterval: 2000,
     floorSize: 100,
@@ -25,6 +25,7 @@ Settings = {
     playerEyePosition: 2,
 
     messageTimeout: 10000,
-
+    grappleDistance: 10,
+    grappleForce: 100,
     respawnTime: 3000
 };

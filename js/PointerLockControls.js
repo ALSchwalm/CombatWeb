@@ -18,8 +18,9 @@ var PointerLockControls = function ( camera, cannonBody ) {
     var moveBackward = false;
     var moveLeft = false;
     var moveRight = false;
+    var jump = false; //for bunny-hopping
 
-    var canJump = false;
+    this.canJump = false;
 
     var contactNormal = new CANNON.Vec3(); // Normal in the contact, pointing *out* of whatever the player touched
     var upAxis = new CANNON.Vec3(0,1,0);
@@ -34,8 +35,13 @@ var PointerLockControls = function ( camera, cannonBody ) {
             contact.ni.copy(contactNormal); // bi is something else. Keep the normal as it is
 
         // If contactNormal.dot(upAxis) is between 0 and 1, we know that the contact normal is somewhat in the up direction.
-        if(contactNormal.dot(upAxis) > 0.5) // Use a "good" threshold value between 0 and 1 here!
-            canJump = true;
+        if(contactNormal.dot(upAxis) > 0.5) {
+            scope.canJump = true;
+            if (jump) {
+                velocity.y = Settings.playerJumpVelocity;
+                scope.canJump = false;
+            }
+        }
     });
 
     var velocity = cannonBody.velocity;
@@ -43,8 +49,6 @@ var PointerLockControls = function ( camera, cannonBody ) {
     var PI_2 = Math.PI / 2;
 
     var onMouseMove = function ( event ) {
-
-        if ( scope.enabled === false ) return;
 
         var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
         var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
@@ -79,10 +83,11 @@ var PointerLockControls = function ( camera, cannonBody ) {
             break;
 
         case 32: // space
-            if ( canJump === true ){
+            if ( scope.canJump === true ){
                 velocity.y = Settings.playerJumpVelocity;
             }
-            canJump = false;
+            scope.canJump = false;
+            jump = true;
             break;
 
         case 84: // t
@@ -92,6 +97,10 @@ var PointerLockControls = function ( camera, cannonBody ) {
         case 9: // tab
             if (!Interface.scoreboardDisabled)
                 Interface.showScoreboard();
+            break;
+
+        case 16: // shift
+            Game.player.attachGrapple();
             break;
         }
         event.preventDefault();
@@ -120,6 +129,14 @@ var PointerLockControls = function ( camera, cannonBody ) {
         case 39: // right
         case 68: // d
             moveRight = false;
+            break;
+
+        case 16: // shift
+            Game.player.detachGrapple();
+            break;
+
+        case 32: // space
+            jump = false;
             break;
 
         case 9: // tab
@@ -153,33 +170,33 @@ var PointerLockControls = function ( camera, cannonBody ) {
         inputVelocity.set(0,0,0);
 
         if ( moveForward){
-        inputVelocity.z = -Settings.playerVelocityFactor * delta;
-        if (!canJump)
-        inputVelocity.z *= Settings.playerAirControlFactor;
+            inputVelocity.z = -Settings.playerVelocityFactor * delta;
+            if (!scope.canJump)
+                inputVelocity.z *= Settings.playerAirControlFactor;
         }
 
         if ( moveBackward){
             inputVelocity.z = Settings.playerVelocityFactor * delta;
-        if (!canJump)
-        inputVelocity.z *= Settings.playerAirControlFactor;
+	        if (!scope.canJump)
+		        inputVelocity.z *= Settings.playerAirControlFactor;
         }
 
         if ( moveLeft){
             inputVelocity.x = -Settings.playerVelocityFactor * delta;
-        if (!canJump)
-        inputVelocity.x *= Settings.playerAirControlFactor;
+	        if (!scope.canJump)
+		        inputVelocity.x *= Settings.playerAirControlFactor;
         }
 
         if ( moveRight){
             inputVelocity.x = Settings.playerVelocityFactor * delta;
-        if (!canJump)
-        inputVelocity.x *= Settings.playerAirControlFactor;
+	        if (!scope.canJump)
+                inputVelocity.x *= Settings.playerAirControlFactor;
         }
 
-    if (canJump) {
-        velocity.x *= Settings.playerFriction;
-        velocity.z *= Settings.playerFriction;
-    }
+        if (scope.canJump) {
+            velocity.x *= Settings.playerFriction;
+            velocity.z *= Settings.playerFriction;
+        }
 
         // Convert velocity to world coordinates
         quat.setFromEuler(new THREE.Euler(pitchObject.rotation.x, yawObject.rotation.y, 0, "XYZ"));

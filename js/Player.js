@@ -1,4 +1,65 @@
 
+makeLocalPlayer = function(ID, name) {
+    if (Game.player) {
+        throw "Local player already exists";
+    }
+
+    var player = new Player(ID, name);
+    player.grappling = false;
+    player.grappleConstraint = null;
+
+    var targetShape = new CANNON.Sphere(0.2);
+    player.grappleTarget = new CANNON.RigidBody(0,targetShape);
+    Game.world.add(player.grappleTarget);
+
+    player.attachGrapple = function() {
+        if (player.grappling) { return false; }
+        player.grappling = true;
+
+        var intersects = Utils.getIntersectsFromPlayer(0, Settings.grappleDistance);
+
+        if (!intersects || (intersects && intersects[0].distance > Settings.grappleDistance)) {
+            player.grappling = false; return false;
+        }
+        player.grappleTarget.shape.radius = 0.2;
+        player.grappleTarget.position = Utils.threeToCannonVec3(intersects[0].point);
+
+        player.grappleConstraint = new CANNON.DistanceConstraint(player.body,
+                                                                 player.grappleTarget,
+                                                                 0,
+                                                                 Settings.grappleForce);
+        Game.world.addConstraint(player.grappleConstraint);
+        Game.world.addEventListener("postStep", player.updateGrapple);
+        player.body.addEventListener("collide", player.grappleHooked);
+    }
+
+    player.detachGrapple = function() {
+        if (!player.grappling) { return false; }
+        player.grappling = false;
+        player.grappleTarget.shape.radius = 0;
+        Game.world.removeConstraint(player.grappleConstraint);
+        Game.world.removeEventListener("postStep", player.updateGrapple);
+        player.body.removeEventListener("collide", player.grappleHooked);
+        player.body.motionstate = 1;
+    }
+
+    player.updateGrapple = function() {
+        var dist = player.grappleTarget.position.vsub(player.body.position);
+        if (Utils.vectMag(dist) > Settings.grappleDistance)
+            player.detachGrapple();
+    }
+
+    player.grappleHooked = function(e) {
+        if (e.with === player.grappleTarget) {
+            player.body.motionstate = 2;
+            player.body.velocity.set(0, 0, 0);
+        }
+    }
+
+    return player;
+}
+
+
 function Player(_ID, name) {
     this.ID = _ID;
     this.name = name;
@@ -89,13 +150,14 @@ Player.prototype.emitSound = function(buffer, sticky, distanceModel, rolloffFact
     if (sticky) {
         var start = +new Date;
         var self = this;
-        var timer = setInterval(function() {
+        var updateSoundPos = function(event) {
             var pos = self.body.position;
             sound.panner.setPosition(pos.x, pos.y, pos.z);
             if (+new Date - start > 1000) { //TODO get sound length from buffer
-                clearInterval(timer);
+                Game.world.removeEventListener("postStep", updateSoundPos);
             }
-        }, 50);
+        }
+        Game.world.addEventListener("postStep", updateSoundPos);
     }
 
     return sound;
