@@ -110,6 +110,7 @@ Interface.showScoreboard = function() {
     $('#innercircle').css('visibility', 'hidden');
     $('#outercircle').css('visibility', 'hidden');
     $('#scoreboard').css('visibility', 'visible').empty();
+    $('#scoreboard').append($("<h3>").html("Scores").css("text-align", "center"));
 
     var players = [];
 
@@ -125,14 +126,28 @@ Interface.showScoreboard = function() {
     var teamdivs = {};
     for(var i in players) {
         if (!teamdivs[players[i].team.name]) {
-            var div = $('<div>').addClass("teamscore");
+            var div = $('<table>').addClass("teamscore");
+            div.css("background-color", Utils.hexToRGBA(players[i].team.color.toString(16), 50));
             div.append($("<h3>").html(players[i].team.name));
             teamdivs[players[i].team.name] = div;
+
+            // Hack for the 'table' headings
+            var headingsdiv = $('<tr>').addClass("playerscore").css("font-weight", "bold");
+            headingsdiv.append($("<td>").addClass("playername").html("Name"));
+            headingsdiv.append($("<td>").addClass("playerkills").html("Kills"));
+            headingsdiv.append($("<td>").addClass("playerdeaths").html("Deaths"));
+            div.append(headingsdiv);
+
         }
-        var playerdiv = $('<div>').addClass("playerscore");
-        playerdiv.append($("<span>").addClass("playername").html(players[i].name));
-        playerdiv.append($("<span>").addClass("playerkills").html(players[i].kills));
-        playerdiv.append($("<span>").addClass("playerdeaths").html(players[i].deaths));
+        var playerdiv = $('<tr>').addClass("playerscore");
+        playerdiv.append($("<td>").addClass("playername").html(players[i].name));
+        playerdiv.append($("<td>").addClass("playerkills").html(players[i].kills));
+        playerdiv.append($("<td>").addClass("playerdeaths").html(players[i].deaths));
+
+        // Make the players score more noticable
+        if (players[i] == Game.player)
+            playerdiv.css("font-style", "italic");
+
         teamdivs[players[i].team.name].append(playerdiv);
     }
     for (var i in teamdivs) {

@@ -11,7 +11,7 @@ Utils.averageValue = function(oldValue, newValue, slices, index) {
 	var diff = newValue - oldValue;
 	var diff = diff / slices;
 	if (index >= slices) return newValue;
-	
+
 	return oldValue + diff * (index+1);
 }
 
@@ -35,5 +35,15 @@ Utils.rotateAroundObjectAxis = function(object, axis, radians) {
 }
 
 Utils.vectMag = function(v) {
-	return Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+    return Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+}
+
+// Taken from http://stackoverflow.com/a/19663677
+Utils.hexToRGBA = function(hex,opacity){
+    hex = hex.replace('#','');
+    r = parseInt(hex.substring(0,2), 16);
+    g = parseInt(hex.substring(2,4), 16);
+    b = parseInt(hex.substring(4,6), 16);
+    result = 'rgba('+r+','+g+','+b+','+opacity/100+')';
+    return result;
 }
