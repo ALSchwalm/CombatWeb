@@ -131,11 +131,10 @@ Interface.showScoreboard = function() {
             div.append($("<h3>").html(players[i].team.name));
             teamdivs[players[i].team.name] = div;
 
-            // Hack for the 'table' headings
-            var headingsdiv = $('<tr>').addClass("playerscore").css("font-weight", "bold");
-            headingsdiv.append($("<td>").addClass("playername").html("Name"));
-            headingsdiv.append($("<td>").addClass("playerkills").html("Kills"));
-            headingsdiv.append($("<td>").addClass("playerdeaths").html("Deaths"));
+            var headingsdiv = $('<tr>').css("text-align", "left");
+            headingsdiv.append($("<th>").html("Name"));
+            headingsdiv.append($("<th>").html("Kills"));
+            headingsdiv.append($("<th>").html("Deaths"));
             div.append(headingsdiv);
 
         }
