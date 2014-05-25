@@ -252,10 +252,10 @@ Game.interpolate = function(newState) {
 // Update the local player
 Game.updatePlayer = function(time) {
     if (Game.player.live) {
-	    //Update physics
+        //Update physics
         Game.world.step(1/Settings.FPS);
 
-	    //Update controls
+        //Update controls
         Game.controls.update(Date.now() - time );
 
         //Fall death
@@ -283,10 +283,10 @@ Game.begin = function () {
 
         Game.updatePlayer(time);
 
-	    //Render scene
+        //Render scene
         Game.renderer.render( Game.scene, Game.camera );
 
-	    //Apply postprocessing
+        //Apply postprocessing
         Game.composer.render(0.05)
 
         requestAnimationFrame( update );

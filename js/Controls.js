@@ -1,6 +1,6 @@
 /**
- * @author mrdoob / http://mrdoob.com/
- * @author schteppe / https://github.com/schteppe
+ * Based on https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_pointerlock.html
+ * by mrdoob and schteppe
  */
 var PointerLockControls = function ( camera, cannonBody ) {
     var scope = this;
@@ -70,7 +70,8 @@ var PointerLockControls = function ( camera, cannonBody ) {
 
         case 37: // left
         case 65: // a
-            moveLeft = true; break;
+            moveLeft = true;
+            break;
 
         case 40: // down
         case 83: // s
@@ -177,19 +178,19 @@ var PointerLockControls = function ( camera, cannonBody ) {
 
         if ( moveBackward){
             inputVelocity.z = Settings.playerVelocityFactor * delta;
-	        if (!scope.canJump)
-		        inputVelocity.z *= Settings.playerAirControlFactor;
+            if (!scope.canJump)
+                    inputVelocity.z *= Settings.playerAirControlFactor;
         }
 
         if ( moveLeft){
             inputVelocity.x = -Settings.playerVelocityFactor * delta;
-	        if (!scope.canJump)
-		        inputVelocity.x *= Settings.playerAirControlFactor;
+            if (!scope.canJump)
+                inputVelocity.x *= Settings.playerAirControlFactor;
         }
 
         if ( moveRight){
             inputVelocity.x = Settings.playerVelocityFactor * delta;
-	        if (!scope.canJump)
+            if (!scope.canJump)
                 inputVelocity.x *= Settings.playerAirControlFactor;
         }
 
