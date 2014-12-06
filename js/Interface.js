@@ -162,9 +162,9 @@ Interface.hideScoreboard = function() {
 }
 
 Interface.createFire = function(player, destination, local) {
-    player.emitSound(Sound.buffers["laser"], true).source.onended = function() {
-        player.emitSound(Sound.buffers["recharge"], true);
-    };
+    // player.emitSound(Sound.buffers["laser"], true).source.onended = function() {
+    //     player.emitSound(Sound.buffers["recharge"], true);
+    // };
 
     var source = player.body.position;
     var direction = new THREE.Vector3();

@@ -292,7 +292,7 @@ Game.begin = function () {
         requestAnimationFrame( update );
         Interface.stats.update();
         time = Date.now();
-        Sound.updateListenerPosition();
+        // Sound.updateListenerPosition();
     }
     update();
 
