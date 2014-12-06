@@ -14,7 +14,7 @@ var currentState = {
 
 var server = connect.createServer(
     connect.static(__dirname)
-).listen(80);
+).listen(8085);
 
 var io = require('socket.io').listen(server);
 io.set('log level', 1); // reduce logging

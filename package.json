@@ -2,7 +2,7 @@
     "name":"combat",
     "version":"0.0.1",
     "dependencies":{
-        "connect":"",
-	"socket.io":""
+        "connect":"2.x.x",
+	"socket.io":"0.9.x"
     }
 }
